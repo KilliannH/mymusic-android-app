@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MyMusic</string>
+    <string name="your_songs_label">Your Songs</string>
+    <string name="button_send">Send</string>
+</resources>
