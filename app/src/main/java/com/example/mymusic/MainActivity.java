@@ -2,8 +2,14 @@ package com.example.mymusic;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -20,7 +26,8 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String EXTRA_MESSAGE = "com.example.mymusic.MESSAGE";
+    ListView listView;
+    String[] listItem;
 
     public String URL = "http://";
 
@@ -30,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         final ArrayList<String> songList = new ArrayList<String>();
+        final Context activityContext = this;
 
         // get api url path from config file
         try {
@@ -59,7 +67,24 @@ public class MainActivity extends AppCompatActivity {
 
                             songList.add(title);
                         }
-                        Log.e("Reponse", songList.toString());
+
+                        listItem = songList.toArray(new String[songList.size()]);
+
+                        listView=(ListView)findViewById(R.id.listview);
+
+                        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(activityContext,
+                                android.R.layout.simple_list_item_1, android.R.id.text1, listItem);
+                        listView.setAdapter(adapter);
+
+                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                                // TODO Auto-generated method stub
+                                String value=adapter.getItem(position);
+                                Toast.makeText(getApplicationContext(),value, Toast.LENGTH_SHORT).show();
+
+                            }
+                        });
                     }
                 },
                 new Response.ErrorListener() {
