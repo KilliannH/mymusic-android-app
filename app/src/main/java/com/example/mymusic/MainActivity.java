@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ListView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -16,30 +15,38 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String EXTRA_MESSAGE = "com.example.mymusic.MESSAGE";
 
-    String api_host = Helper.getConfigValue(this, "api_host");
-    String api_port = Helper.getConfigValue(this, "api_port");
-    String api_endpoint = Helper.getConfigValue(this, "api_endpoint");
-    String url ="http://" + api_host + ":" + api_port + api_endpoint + "/songs";
+    public String URL = "http://";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final ListView listview = (ListView) findViewById(R.id.listview);
         final ArrayList<String> songList = new ArrayList<String>();
+
+        // get api url path from config file
+        try {
+            String api_host = Util.getProperty("api_host", getApplicationContext());
+            String api_port = Util.getProperty("api_port", getApplicationContext());
+            String api_endpoint = Util.getProperty("api_endpoint", getApplicationContext());
+
+            URL += api_host + ":" + api_port + api_endpoint + "/songs";
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
 
         JsonArrayRequest arrayRequest = new JsonArrayRequest(
                 Request.Method.GET,
-                url,
+                URL,
                 null,
                 new Response.Listener<JSONArray>() {
                     @Override
