@@ -39,6 +39,8 @@ public class SongsAdapter  extends ArrayAdapter<Song> {
         title.setText(song.getTitle());
         artist.setText(song.getArtist());
         Glide.with(getContext()).load(song.getAlbum_img_url()).into(album);
+        // See https://github.com/bumptech/glide
+
 
         // Return the completed view to render on screen
         return convertView;
