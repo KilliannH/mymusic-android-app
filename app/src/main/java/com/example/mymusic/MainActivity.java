@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.android.volley.Request;
@@ -19,6 +18,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.mymusic.adapters.SongsAdapter;
 import com.example.mymusic.models.Song;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
     ListView listView;
 
-    public static final String song_id = "com.example.mymusic.SONG_ID";
+    public static final String SONG_JSON = "com.example.mymusic.SONG_JSON";
     public String URL = "http://";
 
     @Override
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                                 // TODO Auto-generated method stub
                                 Song selectedSong = adapter.getItem(position);
-                                sendSong();
+                                dispatchSong(selectedSong);
                             }
                         });
                     }
@@ -102,12 +102,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // send song to the player activity
-    public void sendSong() {
+    public void dispatchSong(Song selectedSong) {
         Intent intent = new Intent(this, PlayerActivity.class);
-        Integer songId = 0; // TODO - not hardcode this
-        // String message = editText.getText().toString();
-        // intent.putExtra(EXTRA_MESSAGE, message);
-        Log.e("activity", "playerActivity");
+
+        String songJson = new Gson().toJson(selectedSong);
+
+        intent.putExtra(SONG_JSON, songJson);
         startActivity(intent);
     }
 }

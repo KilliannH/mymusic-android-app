@@ -4,9 +4,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.example.mymusic.models.Song;
+import com.google.gson.Gson;
+
 import java.io.IOException;
+import java.util.logging.Logger;
 
 public class PlayerActivity extends AppCompatActivity {
 
@@ -19,21 +26,20 @@ public class PlayerActivity extends AppCompatActivity {
 
         // Get the Intent that started this activity and extract the string
         Intent intent = getIntent();
-        // String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+        String songJson = intent.getStringExtra(MainActivity.SONG_JSON);
 
-        // Capture the layout's TextView and set the string as its text
-        // TextView textView = findViewById(R.id.textView);
-        // textView.setText(message);
+        Song song = new Gson().fromJson(songJson, Song.class);
 
-        // get api url path from config file
-        try {
-            String api_host = Util.getProperty("api_host", getApplicationContext());
-            String api_port = Util.getProperty("api_port", getApplicationContext());
-            String api_endpoint = Util.getProperty("api_endpoint", getApplicationContext());
+        Log.e("song", song.toString());
 
-            URL += api_host + ":" + api_port + api_endpoint + "/songs/";
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        TextView title = findViewById(R.id.title);
+        TextView artist = findViewById(R.id.artist);
+        ImageView album = findViewById(R.id.album);
+
+        title.setText(song.getTitle());
+        artist.setText(song.getArtist());
+        Glide.with(this).load(song.getAlbum_img_url()).into(album);
+
+
     }
 }

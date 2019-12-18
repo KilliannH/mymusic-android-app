@@ -14,7 +14,6 @@ public class Song {
         this.album_img_url = album_img_url;
     }
 
-
     /*** getters & setters ***/
 
     public Integer getId() {
@@ -43,5 +42,15 @@ public class Song {
 
     public void setAlbum_img_url(String album_img_url) {
         this.album_img_url = album_img_url;
+    }
+
+    @Override
+    public String toString() {
+        return "Song{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", artist='" + artist + '\'' +
+                ", album_img_url='" + album_img_url + '\'' +
+                '}';
     }
 }
