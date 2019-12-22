@@ -37,7 +37,7 @@ public class SongsAdapter  extends ArrayAdapter<Song> {
         // Populate the data into the template view using the data object
         title.setText(song.getTitle());
         artist.setText(song.getArtist());
-        Glide.with(getContext()).load(song.getAlbum_img_url()).into(album);
+        Glide.with(getContext()).load(song.getAlbum_img()).into(album);
         // See https://github.com/bumptech/glide
 
 

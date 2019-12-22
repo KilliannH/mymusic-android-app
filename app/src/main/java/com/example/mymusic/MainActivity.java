@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -25,6 +26,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String SONG_JSON = "com.example.mymusic.SONG_JSON";
     public String URL = "http://";
+    public String API_KEY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +50,10 @@ public class MainActivity extends AppCompatActivity {
             String api_host = Util.getProperty("api_host", getApplicationContext());
             String api_port = Util.getProperty("api_port", getApplicationContext());
             String api_endpoint = Util.getProperty("api_endpoint", getApplicationContext());
+            String api_key = Util.getProperty("api_key", getApplicationContext());
 
             URL += api_host + ":" + api_port + api_endpoint + "/songs";
+            API_KEY = api_key;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -62,21 +68,22 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONArray response) {
 
-                        for(int i = 0; i < response.length(); i++) {
+                        for (int i = 0; i < response.length(); i++) {
 
                             JSONObject jsonObject = response.optJSONObject(i);
 
                             Integer id = jsonObject.optInt("id");
                             String title = jsonObject.optString("title");
                             String artist = jsonObject.optString("artist");
-                            String album_img_url = jsonObject.optString("album_img_url");
+                            String album_img = jsonObject.optString("album_img");
+                            String filename = jsonObject.optString("filename");
 
-                            Song song = new Song(id, title, artist, album_img_url);
+                            Song song = new Song(id, title, artist, album_img, filename);
 
                             songList.add(song);
                         }
 
-                        listView=(ListView)findViewById(R.id.listview);
+                        listView = (ListView) findViewById(R.id.listview);
                         final SongsAdapter adapter = new SongsAdapter(activityContext, songList);
                         listView.setAdapter(adapter);
 
@@ -97,7 +104,16 @@ public class MainActivity extends AppCompatActivity {
                         Log.e("Error", error.toString());
                     }
                 }
-        );
+        ) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", API_KEY);
+                return headers;
+            }
+        };
+
         requestQueue.add(arrayRequest);
     }
 

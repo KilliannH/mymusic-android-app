@@ -5,13 +5,16 @@ public class Song {
     private Integer id;
     private String title;
     private String artist;
-    private String album_img_url;
+    private String album_img;
+    private String filename;
 
-    public Song (Integer id, String title, String artist, String album_img_url) {
+    public Song (Integer id, String title, String artist, String album_img, String filename) {
         this.id = id;
         this.title = title;
         this.artist = artist;
-        this.album_img_url = album_img_url;
+        this.album_img = album_img;
+        this.filename = filename;
+
     }
 
     /*** getters & setters ***/
@@ -36,12 +39,20 @@ public class Song {
         this.artist = artist;
     }
 
-    public String getAlbum_img_url() {
-        return album_img_url;
+    public String getAlbum_img() {
+        return album_img;
     }
 
-    public void setAlbum_img_url(String album_img_url) {
-        this.album_img_url = album_img_url;
+    public void setAlbum_img(String album_img) {
+        this.album_img = album_img;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 
     @Override
@@ -50,7 +61,8 @@ public class Song {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", artist='" + artist + '\'' +
-                ", album_img_url='" + album_img_url + '\'' +
+                ", album_img='" + album_img + '\'' +
+                ", filename='" + filename + '\'' +
                 '}';
     }
 }
