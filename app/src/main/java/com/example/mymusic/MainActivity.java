@@ -24,7 +24,6 @@ import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     ListView listView;
 
     public static final String SONG_JSON = "com.example.mymusic.SONG_JSON";
-    public String URL = "http://";
+    public String URL;
     public String API_KEY;
 
     @Override
@@ -45,18 +44,8 @@ public class MainActivity extends AppCompatActivity {
         final ArrayList<Song> songList = new ArrayList<Song>();
         final Context activityContext = this;
 
-        // get api url path from config file
-        try {
-            String api_host = Util.getProperty("api_host", getApplicationContext());
-            String api_port = Util.getProperty("api_port", getApplicationContext());
-            String api_endpoint = Util.getProperty("api_endpoint", getApplicationContext());
-            String api_key = Util.getProperty("api_key", getApplicationContext());
-
-            URL += api_host + ":" + api_port + api_endpoint + "/songs";
-            API_KEY = api_key;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        URL = Util.buildUrl("/songs", activityContext);
+        API_KEY = Util.getAPI_KEY(activityContext);
 
         RequestQueue requestQueue = Volley.newRequestQueue(this);
 
@@ -75,10 +64,11 @@ public class MainActivity extends AppCompatActivity {
                             Integer id = jsonObject.optInt("id");
                             String title = jsonObject.optString("title");
                             String artist = jsonObject.optString("artist");
+                            String album = jsonObject.optString("album");
                             String album_img = jsonObject.optString("album_img");
                             String filename = jsonObject.optString("filename");
 
-                            Song song = new Song(id, title, artist, album_img, filename);
+                            Song song = new Song(id, title, artist, album, album_img, filename);
 
                             songList.add(song);
                         }

@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -23,10 +24,12 @@ import com.example.mymusic.models.Song;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 public class PlayerActivity extends AppCompatActivity {
 
-    String URL = "http://";
+    String URL;
+    String API_KEY;
 
     ProgressBar progressBar;
     MediaPlayer mPlayer;
@@ -38,6 +41,7 @@ public class PlayerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_player);
 
         final Context activityContext = this;
+
         mPlayButton = findViewById(R.id.playButton);
         RelativeLayout layout = new RelativeLayout(this);
         progressBar = findViewById(R.id.progressbar);
@@ -52,6 +56,9 @@ public class PlayerActivity extends AppCompatActivity {
 
         Log.e("song", song.toString());
 
+        URL = Util.buildUrl("/stream/" + song.getFilename(), activityContext);
+        API_KEY = Util.getAPI_KEY(activityContext);
+
         TextView title = findViewById(R.id.title);
         TextView artist = findViewById(R.id.artist);
         ImageView album = findViewById(R.id.album);
@@ -60,27 +67,23 @@ public class PlayerActivity extends AppCompatActivity {
         artist.setText(song.getArtist());
         Glide.with(this).load(song.getAlbum_img()).into(album);
 
-        // get api url path from config file
-        try {
-            String api_host = Util.getProperty("api_host", getApplicationContext());
-            String api_port = Util.getProperty("api_port", getApplicationContext());
-            String api_endpoint = Util.getProperty("api_endpoint", getApplicationContext());
-
-            URL += api_host + ":" + api_port + api_endpoint + "/stream/" + song.getFilename();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         // Initialize a new media player instance
         mPlayer = new MediaPlayer();
 
         // Set the media player audio stream type
-        // mPlayer.setAudioStreamType(AudioManager.);
+        mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+
         //Try to play music/audio from url
         try{
             // Set the audio data source
-            mPlayer.setDataSource(URL);
-            mPlayer.prepareAsync();
+
+            HashMap<String, String> headers = new HashMap<String, String>();
+            headers.put("Authorization", API_KEY);
+
+            Uri uri = Uri.parse(URL);
+
+            mPlayer.setDataSource(activityContext, uri, headers);
+            mPlayer.prepare();
 
             mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override

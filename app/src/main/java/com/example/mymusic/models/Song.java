@@ -5,13 +5,15 @@ public class Song {
     private Integer id;
     private String title;
     private String artist;
+    private String album;
     private String album_img;
     private String filename;
 
-    public Song (Integer id, String title, String artist, String album_img, String filename) {
+    public Song (Integer id, String title, String artist, String album, String album_img, String filename) {
         this.id = id;
         this.title = title;
         this.artist = artist;
+        this.album = album;
         this.album_img = album_img;
         this.filename = filename;
 
@@ -37,6 +39,14 @@ public class Song {
 
     public void setArtist(String artist) {
         this.artist = artist;
+    }
+
+    public String getAlbum() {
+        return album;
+    }
+
+    public void setAlbum(String album) {
+        this.album = album;
     }
 
     public String getAlbum_img() {
