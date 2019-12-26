@@ -16,23 +16,23 @@ public class PlayerThread extends Thread {
     private String API_KEY;
     private ProgressBar progressBar;
     private Context context;
+    private MediaPlayer mPlayer;
 
-    public PlayerThread(String url, String api_key, ProgressBar progressBar, Context context) {
+    public PlayerThread(MediaPlayer mPlayer, String url, String api_key, ProgressBar progressBar, Context context) {
         this.URL = url;
         this.API_KEY = api_key;
         this.progressBar = progressBar;
         this.context = context;
+        this.mPlayer = mPlayer;
     }
 
     @Override public void run() {
-        // Initialize a new media player instance
-        MediaPlayer mPlayer = new MediaPlayer();
 
         // Set the media player audio stream type
         mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
         //Try to play music/audio from url
-        try{
+        try {
             // Set the audio data source
 
             HashMap<String, String> headers = new HashMap<String, String>();
@@ -50,7 +50,7 @@ public class PlayerThread extends Thread {
                     mp.start();
                 }
             });
-        }catch (IOException e){
+        } catch (IOException e){
             // Catch the exception
             e.printStackTrace();
         }
