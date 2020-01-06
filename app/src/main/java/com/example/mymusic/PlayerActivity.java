@@ -7,12 +7,14 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -30,7 +32,8 @@ public class PlayerActivity extends AppCompatActivity {
     String URL;
     String API_KEY;
 
-    ProgressBar progressBar;
+    ProgressBar loadingBar;
+    SeekBar mSeekBar;
     FloatingActionButton floatingPlayButton;
     MediaPlayer mPlayer;
 
@@ -51,9 +54,10 @@ public class PlayerActivity extends AppCompatActivity {
 
         floatingPlayButton = findViewById(R.id.floatingPlayButton);
         RelativeLayout layout = new RelativeLayout(this);
-        progressBar = findViewById(R.id.progressbar);
+        loadingBar = findViewById(R.id.loadingBar);
+        mSeekBar = findViewById(R.id.seekBar);
 
-        progressBar.setVisibility(View.VISIBLE);
+        loadingBar.setVisibility(View.VISIBLE);
 
         // Get the Intent that started this activity and extract the string
         Intent intent = getIntent();
@@ -76,7 +80,7 @@ public class PlayerActivity extends AppCompatActivity {
 
         mPlayer = new MediaPlayer();
 
-        PlayerThread playerThread = new PlayerThread(mPlayer, URL, API_KEY, progressBar, activityContext);
+        PlayerThread playerThread = new PlayerThread(mPlayer, URL, API_KEY, loadingBar, activityContext);
         playerThread.start();
 
         disposable = RxBus.subscribe(new Consumer<Object>() {
@@ -84,7 +88,42 @@ public class PlayerActivity extends AppCompatActivity {
             public void accept(Object o) throws Exception {
                 if (o == "READY") {
                     Log.e("Rx", "Player is ready");
+                    mSeekBar.setMax(mPlayer.getDuration() / 1000);
                     mPlayer.start();
+
+                    final Handler mHandler = new Handler();
+                    //Make sure you update Seekbar on UI thread
+                    PlayerActivity.this.runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            if(mPlayer != null){
+                                int mCurrentPosition = mPlayer.getCurrentPosition() / 1000;
+                                mSeekBar.setProgress(mCurrentPosition);
+                            }
+                            mHandler.postDelayed(this, 1000);
+                        }
+                    });
+                }
+            }
+        });
+
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(mPlayer != null && fromUser){
+                    mPlayer.seekTo(progress * 1000);
                 }
             }
         });
