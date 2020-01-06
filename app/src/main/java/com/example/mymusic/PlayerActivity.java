@@ -43,6 +43,8 @@ public class PlayerActivity extends AppCompatActivity {
     Drawable pauseDrawable;
 
     private Disposable disposable;
+    private Handler seekHandler;
+    private Runnable seekRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +81,7 @@ public class PlayerActivity extends AppCompatActivity {
 
         title.setText(song.getTitle());
         artist.setText(song.getArtist());
+        timer.setText("--:--");
         Glide.with(this).load(song.getAlbum_img()).into(album);
 
         mPlayer = new MediaPlayer();
@@ -93,66 +96,67 @@ public class PlayerActivity extends AppCompatActivity {
                     Log.e("Rx", "Player is ready");
                     mSeekBar.setMax(mPlayer.getDuration() / 1000);
                     mPlayer.start();
+                    timer.setText("00:00");
 
-                    final Handler mHandler = new Handler();
-                    //Make sure you update Seekbar on UI thread
-                    PlayerActivity.this.runOnUiThread(new Runnable() {
-
+                    seekHandler = new Handler();
+                    seekRunnable = new Runnable() {
                         @Override
                         public void run() {
-                            if(mPlayer != null){
+                            if (mPlayer != null) {
                                 int mCurrentPosition = mPlayer.getCurrentPosition() / 1000;
                                 mSeekBar.setProgress(mCurrentPosition);
                             }
-                            mHandler.postDelayed(this, 1000);
+                            seekHandler.postDelayed(this, 1000);
+                        }
+                    };
+                    //Make sure you update Seekbar on UI thread
+                    PlayerActivity.this.runOnUiThread(seekRunnable);
+
+                    mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar) {
+
+                        }
+
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar) {
+
+                        }
+
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                            if (mPlayer != null && fromUser) {
+                                mPlayer.seekTo(progress * 1000);
+                            }
+
+                            if (mPlayer != null && progress >= (mPlayer.getDuration() / 1000)) {
+                                mPlayer.seekTo(0);
+                                mPlayer.pause();
+                                floatingPlayButton.setImageDrawable(playDrawable);
+                            }
+
+                            int millis = progress * 1000;
+
+                            timer.setText(String.format("%02d:%02d",
+                                    TimeUnit.MILLISECONDS.toMinutes(millis),
+                                    TimeUnit.MILLISECONDS.toSeconds(millis) -
+                                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
+                            ));
                         }
                     });
-                }
-            }
-        });
 
-        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(mPlayer != null && fromUser){
-                    mPlayer.seekTo(progress * 1000);
-                }
-
-                if(mPlayer != null && progress >= (mPlayer.getDuration() / 1000)) {
-                    mPlayer.seekTo(0);
-                    mPlayer.pause();
-                    floatingPlayButton.setImageDrawable(playDrawable);
-                }
-
-                int millis = progress * 1000;
-
-                timer.setText(String.format("%02d:%02d",
-                        TimeUnit.MILLISECONDS.toMinutes(millis),
-                        TimeUnit.MILLISECONDS.toSeconds(millis) -
-                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
-                ));
-            }
-        });
-
-        floatingPlayButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (mPlayer.isPlaying()) {
-                    mPlayer.pause();
-                    floatingPlayButton.setImageDrawable(playDrawable);
-                } else {
-                    mPlayer.start();
-                    floatingPlayButton.setImageDrawable(pauseDrawable);
+                    floatingPlayButton.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v) {
+                            if (mPlayer.isPlaying()) {
+                                mPlayer.pause();
+                                floatingPlayButton.setImageDrawable(playDrawable);
+                            } else {
+                                mPlayer.start();
+                                floatingPlayButton.setImageDrawable(pauseDrawable);
+                            }
+                        }
+                    });
                 }
             }
         });
@@ -161,9 +165,10 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        mPlayer.stop();
+        mPlayer.reset();
         mPlayer.release();
         disposable.dispose();
+        seekHandler.removeCallbacks(seekRunnable);
         RxBus.publish("NOT_READY");
     }
 
