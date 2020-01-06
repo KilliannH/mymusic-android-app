@@ -16,10 +16,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.mymusic.bus.RxBus;
 import com.example.mymusic.models.Song;
 import com.example.mymusic.threads.PlayerThread;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
+
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Consumer;
 
 public class PlayerActivity extends AppCompatActivity {
 
@@ -32,6 +36,8 @@ public class PlayerActivity extends AppCompatActivity {
 
     Drawable playDrawable;
     Drawable pauseDrawable;
+
+    private Disposable disposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +79,16 @@ public class PlayerActivity extends AppCompatActivity {
         PlayerThread playerThread = new PlayerThread(mPlayer, URL, API_KEY, progressBar, activityContext);
         playerThread.start();
 
+        disposable = RxBus.subscribe(new Consumer<Object>() {
+            @Override
+            public void accept(Object o) throws Exception {
+                if (o == "READY") {
+                    Log.e("Rx", "Player is ready");
+                    mPlayer.start();
+                }
+            }
+        });
+
         floatingPlayButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (mPlayer.isPlaying()) {
@@ -91,5 +107,7 @@ public class PlayerActivity extends AppCompatActivity {
         super.onPause();
         mPlayer.stop();
         mPlayer.release();
+        disposable.dispose();
     }
+
 }

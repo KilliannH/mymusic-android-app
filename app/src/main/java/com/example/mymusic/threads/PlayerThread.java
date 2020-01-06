@@ -4,11 +4,16 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.example.mymusic.bus.RxBus;
+
 import java.io.IOException;
 import java.util.HashMap;
+
+import io.reactivex.rxjava3.functions.Consumer;
 
 public class PlayerThread extends Thread {
 
@@ -17,6 +22,7 @@ public class PlayerThread extends Thread {
     private ProgressBar progressBar;
     private Context context;
     private MediaPlayer mPlayer;
+    private RxBus rxBus;
 
     public PlayerThread(MediaPlayer mPlayer, String url, String api_key, ProgressBar progressBar, Context context) {
         this.URL = url;
@@ -27,6 +33,8 @@ public class PlayerThread extends Thread {
     }
 
     @Override public void run() {
+
+        final Thread thread = this;
 
         // Set the media player audio stream type
         mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -47,7 +55,7 @@ public class PlayerThread extends Thread {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
                     progressBar.setVisibility(View.GONE);
-                    mp.start();
+                    rxBus.publish("READY");
                 }
             });
         } catch (IOException e){
