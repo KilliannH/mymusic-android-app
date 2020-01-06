@@ -24,6 +24,8 @@ import com.example.mymusic.threads.PlayerThread;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Consumer;
 
@@ -72,6 +74,7 @@ public class PlayerActivity extends AppCompatActivity {
 
         TextView title = findViewById(R.id.title);
         TextView artist = findViewById(R.id.artist);
+        final TextView timer = findViewById(R.id.timer);
         ImageView album = findViewById(R.id.album);
 
         title.setText(song.getTitle());
@@ -125,6 +128,20 @@ public class PlayerActivity extends AppCompatActivity {
                 if(mPlayer != null && fromUser){
                     mPlayer.seekTo(progress * 1000);
                 }
+
+                if(mPlayer != null && progress >= (mPlayer.getDuration() / 1000)) {
+                    mPlayer.seekTo(0);
+                    mPlayer.pause();
+                    floatingPlayButton.setImageDrawable(playDrawable);
+                }
+
+                int millis = progress * 1000;
+
+                timer.setText(String.format("%02d:%02d",
+                        TimeUnit.MILLISECONDS.toMinutes(millis),
+                        TimeUnit.MILLISECONDS.toSeconds(millis) -
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
+                ));
             }
         });
 
@@ -147,6 +164,7 @@ public class PlayerActivity extends AppCompatActivity {
         mPlayer.stop();
         mPlayer.release();
         disposable.dispose();
+        RxBus.publish("NOT_READY");
     }
 
 }
