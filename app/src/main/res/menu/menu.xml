@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Settings, should always be in the overflow -->
+    <group
+        android:id="@+id/grp1"
+        android:menuCategory="container">
+        <item
+            android:id="@+id/action_albums"
+            android:title="@string/action_albums"
+            app:showAsAction="ifRoom|withText" />
+        <item
+            android:id="@+id/action_artists"
+            android:title="@string/action_artists"
+            app:showAsAction="ifRoom|withText" />
+        <item
+            android:id="@+id/action_songs"
+            android:title="@string/action_songs"
+            app:showAsAction="ifRoom|withText" />
+    </group>
+
+    <group
+        android:id="@+id/grp2"
+        android:menuCategory="container">
+        <item
+            android:id="@+id/action_add"
+            android:title="@string/action_add"
+            app:showAsAction="ifRoom|withText" />
+        <item
+            android:id="@+id/action_remove"
+            android:title="@string/action_remove"
+            app:showAsAction="ifRoom|withText" />
+    </group>
+
+</menu>

@@ -3,4 +3,10 @@
     <string name="your_songs_label">Your Songs</string>
     <string name="button_send">Send</string>
     <string name="title_activity_player">PlayerActivity</string>
+    <!-- menu ToolBar -->
+    <string name="action_albums">Albums</string>
+    <string name="action_artists">Artists</string>
+    <string name="action_songs">Songs</string>
+    <string name="action_add">Add</string>
+    <string name="action_remove">Remove</string>
 </resources>
