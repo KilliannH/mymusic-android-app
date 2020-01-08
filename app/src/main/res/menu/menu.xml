@@ -7,17 +7,17 @@
         android:id="@+id/grp1"
         android:menuCategory="container">
         <item
+            android:id="@+id/action_songs"
+            android:title="@string/action_songs"
+            app:showAsAction="never|withText" />
+        <item
             android:id="@+id/action_albums"
             android:title="@string/action_albums"
-            app:showAsAction="ifRoom|withText" />
+            app:showAsAction="never|withText" />
         <item
             android:id="@+id/action_artists"
             android:title="@string/action_artists"
-            app:showAsAction="ifRoom|withText" />
-        <item
-            android:id="@+id/action_songs"
-            android:title="@string/action_songs"
-            app:showAsAction="ifRoom|withText" />
+            app:showAsAction="never|withText" />
     </group>
 
     <group
@@ -26,11 +26,12 @@
         <item
             android:id="@+id/action_add"
             android:title="@string/action_add"
-            app:showAsAction="ifRoom|withText" />
+            android:icon="@drawable/ic_add_black_48dp"
+            app:showAsAction="never|withText" />
         <item
             android:id="@+id/action_remove"
             android:title="@string/action_remove"
-            app:showAsAction="ifRoom|withText" />
+            app:showAsAction="never|withText" />
     </group>
 
 </menu>

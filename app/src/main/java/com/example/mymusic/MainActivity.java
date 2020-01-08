@@ -1,5 +1,6 @@
 package com.example.mymusic;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -22,6 +23,9 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.mymusic.adapters.SongsAdapter;
 import com.example.mymusic.models.Song;
+import com.example.mymusic.services.SessionService;
+import com.example.mymusic.utils.Screen;
+import com.example.mymusic.utils.Util;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -35,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
 
     ListView listView;
 
-    public static final String SONG_JSON = "com.example.mymusic.SONG_JSON";
     public String URL;
     public String API_KEY;
 
@@ -46,6 +49,27 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        ArrayList<Screen> screens = SessionService.getScreens();
+
+        // si screen has no length, then no up button, else impl up.
+        if(screens != null && screens.size() > 0) {
+
+            // Get a support ActionBar corresponding to this toolbar
+            ActionBar ab = getSupportActionBar();
+
+            // Enable the Up button
+            if(ab != null) {
+                ab.setDisplayHomeAsUpEnabled(true);
+            }
+
+            for(int i = 0; i < screens.size(); i++) {
+                Screen s = screens.get(i);
+                Log.e("screen", s.getName());
+            }
+        }
+
+        SessionService.addScreen(new Screen("main"));
 
         final ArrayList<Song> songList = new ArrayList<Song>();
         final Context activityContext = this;
@@ -119,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
 
         String songJson = new Gson().toJson(selectedSong);
 
-        intent.putExtra(SONG_JSON, songJson);
+        intent.putExtra("SONG_JSON", songJson);
         startActivity(intent);
     }
 
@@ -128,5 +152,41 @@ public class MainActivity extends AppCompatActivity {
         // Inflate the menu, this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_albums:
+                // User chose the "Settings" item, show the app settings UI...
+                Intent myIntent = new Intent(MainActivity.this,
+                        AlbumsActivity.class);
+                startActivity(myIntent);
+                return true;
+
+            case R.id.action_artists:
+                // User chose the "Favorite" action, mark the current item
+                // as a favorite...
+                return true;
+
+            case R.id.action_songs:
+                return true;
+
+            case R.id.action_add:
+                // User chose the "Favorite" action, mark the current item
+                // as a favorite...
+                return true;
+
+            case R.id.action_remove:
+                // User chose the "Favorite" action, mark the current item
+                // as a favorite...
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
     }
 }

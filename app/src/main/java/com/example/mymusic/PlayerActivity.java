@@ -1,6 +1,8 @@
 package com.example.mymusic;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -21,6 +24,7 @@ import com.bumptech.glide.Glide;
 import com.example.mymusic.bus.RxBus;
 import com.example.mymusic.models.Song;
 import com.example.mymusic.threads.PlayerThread;
+import com.example.mymusic.utils.Util;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 
@@ -53,6 +57,21 @@ public class PlayerActivity extends AppCompatActivity {
 
         final Context activityContext = this;
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // Get a support ActionBar corresponding to this toolbar
+
+        ActionBar ab = getSupportActionBar();
+
+        // Enable the Up button
+        if(ab != null) {
+            ab.setDisplayHomeAsUpEnabled(true);
+        }
+
+        Intent intent = getIntent();
+        String songJson = intent.getStringExtra("SONG_JSON");
+
         playDrawable = getResources().getDrawable(android.R.drawable.ic_media_play, null);
         pauseDrawable = getResources().getDrawable(android.R.drawable.ic_media_pause, null);
 
@@ -62,10 +81,6 @@ public class PlayerActivity extends AppCompatActivity {
         mSeekBar = findViewById(R.id.seekBar);
 
         loadingBar.setVisibility(View.VISIBLE);
-
-        // Get the Intent that started this activity and extract the string
-        Intent intent = getIntent();
-        String songJson = intent.getStringExtra(MainActivity.SONG_JSON);
 
         Song song = new Gson().fromJson(songJson, Song.class);
 
@@ -170,6 +185,45 @@ public class PlayerActivity extends AppCompatActivity {
         disposable.dispose();
         seekHandler.removeCallbacks(seekRunnable);
         RxBus.publish("NOT_READY");
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            case R.id.action_albums:
+                // User chose the "Settings" item, show the app settings UI...
+                Intent myIntent = new Intent(PlayerActivity.this,
+                        AlbumsActivity.class);
+                startActivity(myIntent);
+                return true;
+
+            case R.id.action_artists:
+                // User chose the "Favorite" action, mark the current item
+                // as a favorite...
+                return true;
+
+            case R.id.action_songs:
+                // User chose the "Favorite" action, mark the current item
+                // as a favorite...
+                return true;
+
+            case R.id.action_add:
+                // User chose the "Favorite" action, mark the current item
+                // as a favorite...
+                return true;
+
+            case R.id.action_remove:
+                // User chose the "Favorite" action, mark the current item
+                // as a favorite...
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
     }
 
 }

@@ -1,4 +1,4 @@
-package com.example.mymusic;
+package com.example.mymusic.utils;
 
 import android.content.Context;
 import android.content.res.AssetManager;
