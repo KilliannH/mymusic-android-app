@@ -23,8 +23,6 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.mymusic.adapters.SongsAdapter;
 import com.example.mymusic.models.Song;
-import com.example.mymusic.services.SessionService;
-import com.example.mymusic.utils.Screen;
 import com.example.mymusic.utils.Util;
 import com.google.gson.Gson;
 
@@ -49,27 +47,6 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        ArrayList<Screen> screens = SessionService.getScreens();
-
-        // si screen has no length, then no up button, else impl up.
-        if(screens != null && screens.size() > 0) {
-
-            // Get a support ActionBar corresponding to this toolbar
-            ActionBar ab = getSupportActionBar();
-
-            // Enable the Up button
-            if(ab != null) {
-                ab.setDisplayHomeAsUpEnabled(true);
-            }
-
-            for(int i = 0; i < screens.size(); i++) {
-                Screen s = screens.get(i);
-                Log.e("screen", s.getName());
-            }
-        }
-
-        SessionService.addScreen(new Screen("main"));
 
         final ArrayList<Song> songList = new ArrayList<Song>();
         final Context activityContext = this;
@@ -167,9 +144,6 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_artists:
                 // User chose the "Favorite" action, mark the current item
                 // as a favorite...
-                return true;
-
-            case R.id.action_songs:
                 return true;
 
             case R.id.action_add:

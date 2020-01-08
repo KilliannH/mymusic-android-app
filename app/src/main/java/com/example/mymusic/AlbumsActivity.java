@@ -9,9 +9,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.example.mymusic.services.SessionService;
-import com.example.mymusic.utils.Screen;
-
 public class AlbumsActivity extends AppCompatActivity {
 
     @Override
@@ -30,8 +27,6 @@ public class AlbumsActivity extends AppCompatActivity {
         if(ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
         }
-
-        SessionService.addScreen(new Screen("albums"));
     }
 
     @Override
@@ -53,11 +48,6 @@ public class AlbumsActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_artists:
-                // User chose the "Favorite" action, mark the current item
-                // as a favorite...
-                return true;
-
-            case R.id.action_songs:
                 // User chose the "Favorite" action, mark the current item
                 // as a favorite...
                 return true;

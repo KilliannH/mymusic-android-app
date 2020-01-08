@@ -7,17 +7,13 @@
         android:id="@+id/grp1"
         android:menuCategory="container">
         <item
-            android:id="@+id/action_songs"
-            android:title="@string/action_songs"
-            app:showAsAction="never|withText" />
+            android:id="@+id/action_artists"
+            android:title="@string/action_artists"
+            app:showAsAction="always|withText" />
         <item
             android:id="@+id/action_albums"
             android:title="@string/action_albums"
-            app:showAsAction="never|withText" />
-        <item
-            android:id="@+id/action_artists"
-            android:title="@string/action_artists"
-            app:showAsAction="never|withText" />
+            app:showAsAction="always|withText" />
     </group>
 
     <group

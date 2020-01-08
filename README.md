@@ -1,7 +1,7 @@
 Todo :
-    - complete & test sessionService
+    - data should be handled on a DataService with cache
     - complete "onOptionsItemSelected"
-    - handle cache
+    - PlayerThread should be alive even when player activity is gone
     --------------------------------
     - style on navbar
     - (bonus) icons on navMenu
