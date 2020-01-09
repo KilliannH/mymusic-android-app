@@ -34,8 +34,6 @@ public class PlayerThread extends Thread {
 
     @Override public void run() {
 
-        final Thread thread = this;
-
         // Set the media player audio stream type
         mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 

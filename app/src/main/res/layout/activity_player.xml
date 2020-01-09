@@ -11,7 +11,7 @@
         layout="@layout/toolbar" />
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/artist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -30,7 +30,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/artist"
+        app:layout_constraintTop_toBottomOf="@+id/title"
         app:srcCompat="@drawable/ic_launcher_background" />
 
     <SeekBar
@@ -46,14 +46,14 @@
         app:layout_constraintTop_toBottomOf="@+id/album" />
 
     <TextView
-        android:id="@+id/artist"
+        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title" />
+        app:layout_constraintTop_toBottomOf="@+id/artist" />
 
     <ProgressBar
         android:id="@+id/loadingBar"

@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         String songJson = new Gson().toJson(selectedSong);
 
         intent.putExtra("SONG_JSON", songJson);
+        intent.putExtra("PREV_SCREEN", "main");
         startActivity(intent);
     }
 
@@ -96,17 +97,22 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        Intent myIntent;
+
         switch (item.getItemId()) {
             case R.id.action_albums:
                 // User chose the "Settings" item, show the app settings UI...
-                Intent myIntent = new Intent(MainActivity.this,
+                myIntent = new Intent(MainActivity.this,
                         AlbumsActivity.class);
                 startActivity(myIntent);
                 return true;
 
             case R.id.action_artists:
-                // User chose the "Favorite" action, mark the current item
-                // as a favorite...
+                // User chose the "Settings" item, show the app settings UI...
+                myIntent = new Intent(MainActivity.this,
+                        AlbumsActivity.class);
+                startActivity(myIntent);
                 return true;
 
             case R.id.action_add:

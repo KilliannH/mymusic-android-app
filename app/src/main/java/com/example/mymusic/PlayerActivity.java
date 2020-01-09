@@ -38,6 +38,7 @@ public class PlayerActivity extends AppCompatActivity {
 
     String URL;
     String API_KEY;
+    private String prevScreen;
 
     ProgressBar loadingBar;
     SeekBar mSeekBar;
@@ -72,6 +73,7 @@ public class PlayerActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String songJson = intent.getStringExtra("SONG_JSON");
+        prevScreen = intent.getStringExtra("PREV_SCREEN");
 
         playDrawable = getResources().getDrawable(android.R.drawable.ic_media_play, null);
         pauseDrawable = getResources().getDrawable(android.R.drawable.ic_media_pause, null);
@@ -90,8 +92,8 @@ public class PlayerActivity extends AppCompatActivity {
         URL = Util.buildUrl("/stream/" + song.getFilename(), activityContext);
         API_KEY = Util.getAPI_KEY(activityContext);
 
-        TextView title = findViewById(R.id.title);
-        TextView artist = findViewById(R.id.artist);
+        TextView title = findViewById(R.id.artist);
+        TextView artist = findViewById(R.id.title);
         final TextView timer = findViewById(R.id.timer);
         ImageView album = findViewById(R.id.album);
 
@@ -201,6 +203,22 @@ public class PlayerActivity extends AppCompatActivity {
         Intent myIntent;
 
         switch (item.getItemId()) {
+
+            case android.R.id.home:
+                if(prevScreen.equals("main")) {
+                    myIntent = new Intent(PlayerActivity.this,
+                            MainActivity.class);
+                    startActivity(myIntent);
+                } else if(prevScreen.equals("albums")) {
+                    myIntent = new Intent(PlayerActivity.this,
+                            AlbumsActivity.class);
+                    startActivity(myIntent);
+                } else if(prevScreen.equals("artists")) {
+                    myIntent = new Intent(PlayerActivity.this,
+                            ArtistsActivity.class);
+                    startActivity(myIntent);
+                }
+                return true;
 
             case R.id.action_albums:
                 myIntent = new Intent(PlayerActivity.this,
