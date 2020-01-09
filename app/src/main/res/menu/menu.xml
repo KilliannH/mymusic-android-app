@@ -9,11 +9,11 @@
         <item
             android:id="@+id/action_artists"
             android:title="@string/action_artists"
-            app:showAsAction="always|withText" />
+            app:showAsAction="ifRoom|withText" />
         <item
             android:id="@+id/action_albums"
             android:title="@string/action_albums"
-            app:showAsAction="always|withText" />
+            app:showAsAction="ifRoom|withText" />
     </group>
 
     <group

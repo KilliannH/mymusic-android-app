@@ -7,38 +7,28 @@ import androidx.appcompat.widget.Toolbar;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.mymusic.adapters.SongsAdapter;
+import com.example.mymusic.bus.RxBus;
 import com.example.mymusic.models.Song;
-import com.example.mymusic.utils.Util;
+import com.example.mymusic.services.DataService;
 import com.google.gson.Gson;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity {
 
     ListView listView;
-
-    public String URL;
-    public String API_KEY;
+    private Disposable disposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,70 +38,36 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        final ArrayList<Song> songList = new ArrayList<Song>();
         final Context activityContext = this;
 
-        URL = Util.buildUrl("/songs", activityContext);
-        API_KEY = Util.getAPI_KEY(activityContext);
+         DataService dataService = new DataService(activityContext);
+         RxBus.publish("DATA_NOT_READY");
 
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        final ArrayList<Song> songList = dataService.getSongs();
 
-        JsonArrayRequest arrayRequest = new JsonArrayRequest(
-                Request.Method.GET,
-                URL,
-                null,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-
-                        for (int i = 0; i < response.length(); i++) {
-
-                            JSONObject jsonObject = response.optJSONObject(i);
-
-                            Integer id = jsonObject.optInt("id");
-                            String title = jsonObject.optString("title");
-                            String artist = jsonObject.optString("artist");
-                            String album = jsonObject.optString("album");
-                            String album_img = jsonObject.optString("album_img");
-                            String filename = jsonObject.optString("filename");
-
-                            Song song = new Song(id, title, artist, album, album_img, filename);
-
-                            songList.add(song);
-                        }
-
-                        listView = (ListView) findViewById(R.id.listview);
-                        final SongsAdapter adapter = new SongsAdapter(activityContext, songList);
-                        listView.setAdapter(adapter);
-
-                        // callback when an item is clicked
-                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                                // TODO Auto-generated method stub
-                                Song selectedSong = adapter.getItem(position);
-                                dispatchSong(selectedSong);
-                            }
-                        });
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e("Error", error.toString());
-                    }
-                }
-        ) {
-
+        disposable = RxBus.subscribe(new Consumer<Object>() {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Authorization", API_KEY);
-                return headers;
-            }
-        };
+            public void accept(Object o) throws Exception {
+                if (o == "DATA_READY") {
 
-        requestQueue.add(arrayRequest);
+                    // init the list view
+
+                    listView = (ListView) findViewById(R.id.listview);
+                    final SongsAdapter adapter = new SongsAdapter(activityContext, songList);
+                    listView.setAdapter(adapter);
+
+                    // callback when an item is clicked
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                            // TODO Auto-generated method stub
+                            Song selectedSong = adapter.getItem(position);
+                            dispatchSong(selectedSong);
+                        }
+                    });
+                }
+            }
+        });
     }
 
     // send song to the player activity
@@ -122,6 +78,13 @@ public class MainActivity extends AppCompatActivity {
 
         intent.putExtra("SONG_JSON", songJson);
         startActivity(intent);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        disposable.dispose();
+        RxBus.publish("DATA_NOT_READY");
     }
 
     @Override

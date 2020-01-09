@@ -108,7 +108,7 @@ public class PlayerActivity extends AppCompatActivity {
         disposable = RxBus.subscribe(new Consumer<Object>() {
             @Override
             public void accept(Object o) throws Exception {
-                if (o == "READY") {
+                if (o == "PLAYER_READY") {
                     Log.e("Rx", "Player is ready");
                     mSeekBar.setMax(mPlayer.getDuration() / 1000);
                     mPlayer.start();
@@ -185,7 +185,7 @@ public class PlayerActivity extends AppCompatActivity {
         mPlayer.release();
         disposable.dispose();
         seekHandler.removeCallbacks(seekRunnable);
-        RxBus.publish("NOT_READY");
+        RxBus.publish("PLAYER_NOT_READY");
     }
 
     @Override

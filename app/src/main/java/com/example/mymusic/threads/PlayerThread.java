@@ -55,7 +55,7 @@ public class PlayerThread extends Thread {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
                     loadingBar.setVisibility(View.GONE);
-                    rxBus.publish("READY");
+                    rxBus.publish("PLAYER_READY");
                 }
             });
         } catch (IOException e){
