@@ -9,12 +9,12 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class AlbumsActivity extends AppCompatActivity {
+public class ArtistsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_albums);
+        setContentView(R.layout.activity_artists);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -44,12 +44,12 @@ public class AlbumsActivity extends AppCompatActivity {
         switch (item.getItemId()) {
 
             case R.id.action_albums:
+                myIntent = new Intent(ArtistsActivity.this,
+                        AlbumsActivity.class);
+                startActivity(myIntent);
                 return true;
 
             case R.id.action_artists:
-                myIntent = new Intent(AlbumsActivity.this,
-                        ArtistsActivity.class);
-                startActivity(myIntent);
                 return true;
 
             case R.id.action_add:
@@ -69,5 +69,4 @@ public class AlbumsActivity extends AppCompatActivity {
 
         }
     }
-
 }

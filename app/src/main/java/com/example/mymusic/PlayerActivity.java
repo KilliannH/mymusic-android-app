@@ -197,21 +197,21 @@ public class PlayerActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        Intent myIntent;
+
         switch (item.getItemId()) {
-            case android.R.id.home:
-                startActivity(new Intent(this, MainActivity.class));
-                return true;
 
             case R.id.action_albums:
-                // User chose the "Settings" item, show the app settings UI...
-                Intent myIntent = new Intent(PlayerActivity.this,
+                myIntent = new Intent(PlayerActivity.this,
                         AlbumsActivity.class);
                 startActivity(myIntent);
                 return true;
 
             case R.id.action_artists:
-                // User chose the "Favorite" action, mark the current item
-                // as a favorite...
+                myIntent = new Intent(PlayerActivity.this,
+                        ArtistsActivity.class);
+                startActivity(myIntent);
                 return true;
 
             case R.id.action_add:
