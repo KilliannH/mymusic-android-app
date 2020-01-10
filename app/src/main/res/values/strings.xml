@@ -8,4 +8,6 @@
     <string name="action_artists">Artists</string>
     <string name="action_add">Add</string>
     <string name="action_remove">Remove</string>
+    <string name="action_update">Update</string>
+    <string name="action_settings">Settings</string>
 </resources>

@@ -1,6 +1,5 @@
 package com.example.mymusic;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -8,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,20 +42,21 @@ public class MainActivity extends AppCompatActivity {
         final Context activityContext = this;
 
          DataService dataService = new DataService(activityContext);
-         RxBus.publish("DATA_NOT_READY");
+         RxBus.publish("MAIN_NOT_READY");
 
         final ArrayList<Song> songList = dataService.getSongs();
 
         disposable = RxBus.subscribe(new Consumer<Object>() {
             @Override
             public void accept(Object o) throws Exception {
-                if (o == "DATA_READY") {
+                if (o == "MAIN_READY") {
 
                     // init the list view
 
                     listView = (ListView) findViewById(R.id.listview);
                     final SongsAdapter adapter = new SongsAdapter(activityContext, songList);
                     listView.setAdapter(adapter);
+                    registerForContextMenu(listView);
 
                     // callback when an item is clicked
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -77,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
         String songJson = new Gson().toJson(selectedSong);
 
         intent.putExtra("SONG_JSON", songJson);
-        intent.putExtra("PREV_SCREEN", "main");
         startActivity(intent);
     }
 
@@ -85,9 +86,33 @@ public class MainActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         disposable.dispose();
-        RxBus.publish("DATA_NOT_READY");
+        RxBus.publish("MAIN_NOT_READY");
     }
 
+    // this menu is on longclick
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        // Inflate the menu, this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.song_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_update:
+                Log.e("Context", "update selected");
+                return true;
+            case R.id.action_remove:
+                Log.e("Context", "remove selected");
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+
+    // this menu is in appBar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu, this adds items to the action bar if it is present.
@@ -101,26 +126,18 @@ public class MainActivity extends AppCompatActivity {
         Intent myIntent;
 
         switch (item.getItemId()) {
-            case R.id.action_albums:
+
+
+            /* case R.id.action_artists:
                 // User chose the "Settings" item, show the app settings UI...
                 myIntent = new Intent(MainActivity.this,
-                        AlbumsActivity.class);
+                        ArtistsActivity.class);
                 startActivity(myIntent);
                 return true;
 
-            case R.id.action_artists:
-                // User chose the "Settings" item, show the app settings UI...
-                myIntent = new Intent(MainActivity.this,
-                        AlbumsActivity.class);
-                startActivity(myIntent);
-                return true;
+             */
 
             case R.id.action_add:
-                // User chose the "Favorite" action, mark the current item
-                // as a favorite...
-                return true;
-
-            case R.id.action_remove:
                 // User chose the "Favorite" action, mark the current item
                 // as a favorite...
                 return true;

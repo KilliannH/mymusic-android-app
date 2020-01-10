@@ -3,21 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- Settings, should always be in the overflow -->
-    <group
-        android:id="@+id/grp1"
-        android:menuCategory="container">
-        <item
-            android:id="@+id/action_artists"
-            android:title="@string/action_artists"
-            app:showAsAction="ifRoom|withText" />
-        <item
-            android:id="@+id/action_albums"
-            android:title="@string/action_albums"
-            app:showAsAction="ifRoom|withText" />
-    </group>
 
     <group
-        android:id="@+id/grp2"
+        android:id="@+id/grp1"
         android:menuCategory="container">
         <item
             android:id="@+id/action_add"
@@ -25,8 +13,8 @@
             android:icon="@drawable/ic_add_black_48dp"
             app:showAsAction="never|withText" />
         <item
-            android:id="@+id/action_remove"
-            android:title="@string/action_remove"
+            android:id="@+id/action_settings"
+            android:title="@string/action_settings"
             app:showAsAction="never|withText" />
     </group>
 

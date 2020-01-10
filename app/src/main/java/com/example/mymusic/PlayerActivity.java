@@ -79,15 +79,12 @@ public class PlayerActivity extends AppCompatActivity {
         pauseDrawable = getResources().getDrawable(android.R.drawable.ic_media_pause, null);
 
         floatingPlayButton = findViewById(R.id.floatingPlayButton);
-        RelativeLayout layout = new RelativeLayout(this);
         loadingBar = findViewById(R.id.loadingBar);
         mSeekBar = findViewById(R.id.seekBar);
 
         loadingBar.setVisibility(View.VISIBLE);
 
         Song song = new Gson().fromJson(songJson, Song.class);
-
-        Log.e("song", song.toString());
 
         URL = Util.buildUrl("/stream/" + song.getFilename(), activityContext);
         API_KEY = Util.getAPI_KEY(activityContext);
@@ -111,7 +108,6 @@ public class PlayerActivity extends AppCompatActivity {
             @Override
             public void accept(Object o) throws Exception {
                 if (o == "PLAYER_READY") {
-                    Log.e("Rx", "Player is ready");
                     mSeekBar.setMax(mPlayer.getDuration() / 1000);
                     mPlayer.start();
                     timer.setText("00:00");
@@ -204,40 +200,7 @@ public class PlayerActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
 
-            case android.R.id.home:
-                if(prevScreen.equals("main")) {
-                    myIntent = new Intent(PlayerActivity.this,
-                            MainActivity.class);
-                    startActivity(myIntent);
-                } else if(prevScreen.equals("albums")) {
-                    myIntent = new Intent(PlayerActivity.this,
-                            AlbumsActivity.class);
-                    startActivity(myIntent);
-                } else if(prevScreen.equals("artists")) {
-                    myIntent = new Intent(PlayerActivity.this,
-                            ArtistsActivity.class);
-                    startActivity(myIntent);
-                }
-                return true;
-
-            case R.id.action_albums:
-                myIntent = new Intent(PlayerActivity.this,
-                        AlbumsActivity.class);
-                startActivity(myIntent);
-                return true;
-
-            case R.id.action_artists:
-                myIntent = new Intent(PlayerActivity.this,
-                        ArtistsActivity.class);
-                startActivity(myIntent);
-                return true;
-
             case R.id.action_add:
-                // User chose the "Favorite" action, mark the current item
-                // as a favorite...
-                return true;
-
-            case R.id.action_remove:
                 // User chose the "Favorite" action, mark the current item
                 // as a favorite...
                 return true;

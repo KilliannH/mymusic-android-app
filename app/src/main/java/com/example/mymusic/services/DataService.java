@@ -62,8 +62,7 @@ public class DataService {
 
                             songList.add(song);
                         }
-                        RxBus.publish("DATA_READY");
-                        Log.e("Rx", "Data is ready");
+                        RxBus.publish("MAIN_READY");
                     }
                 },
                 new Response.ErrorListener() {
