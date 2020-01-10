@@ -90,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
             public void accept(Object o) throws Exception {
                 if (o == "DATA_READY") {
 
-                    Log.e("e", "Bibi");
                     // init the list view
 
                     listView = (ListView) findViewById(R.id.listview);
