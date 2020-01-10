@@ -1,7 +1,10 @@
 package com.example.mymusic.services;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -31,10 +34,14 @@ public class DataService {
         this.context = context;
     }
 
-    public ArrayList<Song> getSongs() {
+    public ArrayList<Song> getSongs(String search) {
         final ArrayList<Song> songList = new ArrayList<Song>();
 
-        URL = Util.buildUrl("/songs", context);
+        if(search.equals("")) {
+            URL = Util.buildUrl("/songs", context);
+        } else {
+            URL = Util.buildUrl("/songs?search=" + search, context);
+        }
         API_KEY = Util.getAPI_KEY(context);
 
         RequestQueue requestQueue = Volley.newRequestQueue(context);

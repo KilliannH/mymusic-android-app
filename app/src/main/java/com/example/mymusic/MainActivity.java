@@ -1,14 +1,18 @@
 package com.example.mymusic;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
+import android.text.Layout;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +33,7 @@ import io.reactivex.rxjava3.functions.Consumer;
 public class MainActivity extends AppCompatActivity {
 
     ListView listView;
+    AlertDialog dialog;
     private Disposable disposable;
 
     @Override
@@ -44,7 +49,33 @@ public class MainActivity extends AppCompatActivity {
          DataService dataService = new DataService(activityContext);
          RxBus.publish("MAIN_NOT_READY");
 
-        final ArrayList<Song> songList = dataService.getSongs();
+        final ArrayList<Song> songList = dataService.getSongs("");
+
+
+        // create the search dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
+
+        // Get the layout inflater
+        LayoutInflater inflater = this.getLayoutInflater();
+
+        // Inflate and set the layout for the dialog
+        // Pass null as the parent view because its going in the dialog layout
+        builder.setView(inflater.inflate(R.layout.dialog_search, null));
+
+        builder.setTitle(R.string.action_search);
+
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked OK button
+            }
+        });
+        builder.setNegativeButton(R.string.dismiss, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+            }
+        });
+
+        dialog = builder.create();
 
         disposable = RxBus.subscribe(new Consumer<Object>() {
             @Override
@@ -89,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
         RxBus.publish("MAIN_NOT_READY");
     }
 
-    // this menu is on longclick
+    // this is the longClick context menu
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
@@ -101,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_update:
+            case R.id.action_edit:
                 Log.e("Context", "update selected");
                 return true;
             case R.id.action_remove:
@@ -112,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // this menu is in appBar
+    // this is the appBar Menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu, this adds items to the action bar if it is present.
@@ -123,23 +154,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        Intent myIntent;
-
         switch (item.getItemId()) {
 
-
-            /* case R.id.action_artists:
-                // User chose the "Settings" item, show the app settings UI...
-                myIntent = new Intent(MainActivity.this,
-                        ArtistsActivity.class);
-                startActivity(myIntent);
+            case R.id.action_search:
+                // User chose the "Search" item
+                dialog.show();
                 return true;
 
-             */
-
             case R.id.action_add:
-                // User chose the "Favorite" action, mark the current item
-                // as a favorite...
+                return true;
+
+            case R.id.action_settings:
                 return true;
 
             default:
