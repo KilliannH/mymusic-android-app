@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
-import android.text.Layout;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -17,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import com.example.mymusic.adapters.SongsAdapter;
@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     ListView listView;
     AlertDialog dialog;
+    ArrayList<Song> songList = new ArrayList<>();
     private Disposable disposable;
 
     @Override
@@ -46,10 +47,10 @@ public class MainActivity extends AppCompatActivity {
 
         final Context activityContext = this;
 
-         DataService dataService = new DataService(activityContext);
+         final DataService dataService = new DataService(activityContext);
          RxBus.publish("MAIN_NOT_READY");
 
-        final ArrayList<Song> songList = dataService.getSongs("");
+        songList = dataService.getSongs("");
 
 
         // create the search dialog
@@ -57,31 +58,39 @@ public class MainActivity extends AppCompatActivity {
 
         // Get the layout inflater
         LayoutInflater inflater = this.getLayoutInflater();
+        View content = inflater.inflate(R.layout.dialog_layout, null);
+
+        // get the EditText from inflated layout
+        final EditText editText = (EditText) content.findViewById(R.id.dialog_search);
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        builder.setView(inflater.inflate(R.layout.dialog_search, null));
+        builder.setView(content);
 
         builder.setTitle(R.string.action_search);
 
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked OK button
+                String query = editText.getText().toString();
+                RxBus.publish("DATA_NOT_READY");
+                songList = dataService.getSongs(query);
             }
         });
         builder.setNegativeButton(R.string.dismiss, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User cancelled the dialog
+                dialog.cancel();
             }
         });
 
         dialog = builder.create();
 
+        // Fires at startup & after a search query
         disposable = RxBus.subscribe(new Consumer<Object>() {
             @Override
             public void accept(Object o) throws Exception {
-                if (o == "MAIN_READY") {
+                if (o == "DATA_READY") {
 
+                    Log.e("e", "Bibi");
                     // init the list view
 
                     listView = (ListView) findViewById(R.id.listview);
@@ -117,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         disposable.dispose();
-        RxBus.publish("MAIN_NOT_READY");
+        RxBus.publish("DATA_NOT_READY");
     }
 
     // this is the longClick context menu
@@ -133,10 +142,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onContextItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_edit:
-                Log.e("Context", "update selected");
                 return true;
             case R.id.action_remove:
-                Log.e("Context", "remove selected");
                 return true;
             default:
                 return super.onContextItemSelected(item);
