@@ -3,13 +3,16 @@ package com.example.mymusic;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
 
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
-import android.text.Layout;
+import android.text.Editable;
+
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -17,10 +20,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import com.example.mymusic.adapters.SongsAdapter;
 import com.example.mymusic.bus.RxBus;
+import com.example.mymusic.dialogs.SearchDialogFragment;
 import com.example.mymusic.models.Song;
 import com.example.mymusic.services.DataService;
 import com.google.gson.Gson;
@@ -33,7 +38,6 @@ import io.reactivex.rxjava3.functions.Consumer;
 public class MainActivity extends AppCompatActivity {
 
     ListView listView;
-    AlertDialog dialog;
     private Disposable disposable;
 
     @Override
@@ -47,40 +51,14 @@ public class MainActivity extends AppCompatActivity {
         final Context activityContext = this;
 
          DataService dataService = new DataService(activityContext);
-         RxBus.publish("MAIN_NOT_READY");
+         RxBus.publish("DATA_NOT_READY");
 
         final ArrayList<Song> songList = dataService.getSongs("");
-
-
-        // create the search dialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
-
-        // Get the layout inflater
-        LayoutInflater inflater = this.getLayoutInflater();
-
-        // Inflate and set the layout for the dialog
-        // Pass null as the parent view because its going in the dialog layout
-        builder.setView(inflater.inflate(R.layout.dialog_search, null));
-
-        builder.setTitle(R.string.action_search);
-
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User clicked OK button
-            }
-        });
-        builder.setNegativeButton(R.string.dismiss, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User cancelled the dialog
-            }
-        });
-
-        dialog = builder.create();
 
         disposable = RxBus.subscribe(new Consumer<Object>() {
             @Override
             public void accept(Object o) throws Exception {
-                if (o == "MAIN_READY") {
+                if (o == "DATA_READY") {
 
                     // init the list view
 
@@ -117,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         disposable.dispose();
-        RxBus.publish("MAIN_NOT_READY");
+        RxBus.publish("DATA_NOT_READY");
     }
 
     // this is the longClick context menu
@@ -158,7 +136,8 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.action_search:
                 // User chose the "Search" item
-                dialog.show();
+                SearchDialogFragment dialogFragment = new SearchDialogFragment();
+                dialogFragment.show(getSupportFragmentManager(), "search");
                 return true;
 
             case R.id.action_add:

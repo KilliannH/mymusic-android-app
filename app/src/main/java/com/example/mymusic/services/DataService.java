@@ -69,7 +69,7 @@ public class DataService {
 
                             songList.add(song);
                         }
-                        RxBus.publish("MAIN_READY");
+                        RxBus.publish("DATA_READY");
                     }
                 },
                 new Response.ErrorListener() {
