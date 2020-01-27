@@ -1,7 +1,8 @@
-Todo :
-    - data should be handled on a DataService with cache
-    - complete "onOptionsItemSelected"
-    - PlayerThread should be alive even when player activity is gone
-    --------------------------------
-    - style on navbar
-    - (bonus) icons on navMenu
+remove search functionality
+
+impl shuffle for an efficient songList (don't replay a previously played song from the session)
+player should be independent from playerActivity
+impl Player Fragment
+
+bonus : first api call should not retrieve all songs
+player thread should keep playing even if user is not on playerActivity.
