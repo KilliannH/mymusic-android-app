@@ -3,7 +3,9 @@ package com.example.mymusic;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -22,6 +24,7 @@ import android.widget.TextView;
 
 import com.example.mymusic.adapters.SongsAdapter;
 import com.example.mymusic.bus.RxBus;
+import com.example.mymusic.fragments.PlayerFragment;
 import com.example.mymusic.models.Song;
 import com.example.mymusic.services.DataService;
 import com.google.gson.Gson;
@@ -48,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         final Context activityContext = this;
+
+        loadFragment(new PlayerFragment());
 
          final DataService dataService = new DataService(activityContext);
          RxBus.publish("MAIN_NOT_READY");
@@ -153,6 +158,11 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("SONG_JSON", songJson);
         intent.putExtra("SONG_JSON_ARR", songJsonArr);
         startActivity(intent);
+    }
+
+    private void loadFragment(Fragment fragment) {
+// create a FragmentManager
+        FragmentManager fm = getFragmentManager();
     }
 
     @Override

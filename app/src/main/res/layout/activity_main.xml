@@ -44,4 +44,12 @@
         app:layout_constraintStart_toEndOf="@+id/query"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
+    <fragment
+        android:name="com.example.mymusic.fragments.PlayerFragment"
+        android:id="@+id/viewer"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
