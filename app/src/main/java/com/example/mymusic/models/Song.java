@@ -75,4 +75,14 @@ public class Song {
                 ", filename='" + filename + '\'' +
                 '}';
     }
+
+    public String toJSON() {
+        return "{" +
+                "\"id\":" + " \"" + id + "\"" +
+                ", \"title\":" + " \"" + title + "\"" +
+                ", \"artist\":" + " \"" + artist + "\"" +
+                ", \"album_img\":" + " \"" + album_img +  "\"" +
+                ", \"filename\":" + " \"" + filename + "\"" +
+                "}";
+    }
 }

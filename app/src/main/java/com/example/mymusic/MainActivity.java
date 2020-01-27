@@ -4,6 +4,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.app.FragmentManager;
 import android.content.Context;
@@ -11,6 +12,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -51,8 +53,6 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         final Context activityContext = this;
-
-        loadFragment(new PlayerFragment());
 
          final DataService dataService = new DataService(activityContext);
          RxBus.publish("MAIN_NOT_READY");
@@ -123,7 +123,13 @@ public class MainActivity extends AppCompatActivity {
                         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                             // TODO Auto-generated method stub
                             Song selectedSong = adapter.getItem(position);
-                            dispatchSong(selectedSong);
+                            Bundle bundle = new Bundle();
+                            bundle.putString("SELECTED_SONG", selectedSong.toJSON());
+                            final Fragment playerFragment = new PlayerFragment();
+                            playerFragment.setArguments(bundle);
+                            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                            transaction.add(R.id.fragment_container, playerFragment);
+                            transaction.commit();
                         }
                     });
                 }
@@ -141,28 +147,6 @@ public class MainActivity extends AppCompatActivity {
                songList = dataService.getSongs("");
            }
        });
-    }
-
-    // send song to the player activity
-    public void dispatchSong(Song selectedSong) {
-        Intent intent = new Intent(this, PlayerActivity.class);
-
-        String songJson = new Gson().toJson(selectedSong);
-
-        ArrayList<Song> remindedSongs = songList;
-
-        remindedSongs.remove(selectedSong);
-
-        String songJsonArr = new Gson().toJson(remindedSongs);
-
-        intent.putExtra("SONG_JSON", songJson);
-        intent.putExtra("SONG_JSON_ARR", songJsonArr);
-        startActivity(intent);
-    }
-
-    private void loadFragment(Fragment fragment) {
-// create a FragmentManager
-        FragmentManager fm = getFragmentManager();
     }
 
     @Override

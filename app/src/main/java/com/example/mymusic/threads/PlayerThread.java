@@ -4,16 +4,11 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.util.Log;
-import android.view.View;
-import android.widget.ProgressBar;
 
 import com.example.mymusic.bus.RxBus;
 
 import java.io.IOException;
 import java.util.HashMap;
-
-import io.reactivex.rxjava3.functions.Consumer;
 
 public class PlayerThread extends Thread {
 
@@ -21,7 +16,6 @@ public class PlayerThread extends Thread {
     private String API_KEY;
     private Context context;
     private MediaPlayer mPlayer;
-    private RxBus rxBus;
 
     public PlayerThread(MediaPlayer mPlayer, String url, String api_key, Context context) {
         this.URL = url;
@@ -50,7 +44,7 @@ public class PlayerThread extends Thread {
             mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    rxBus.publish("PLAYER_READY");
+                    RxBus.publish("PLAYER_READY");
                 }
             });
         } catch (IOException e){
