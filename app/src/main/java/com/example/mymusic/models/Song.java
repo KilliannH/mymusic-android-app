@@ -2,14 +2,14 @@ package com.example.mymusic.models;
 
 public class Song {
 
-    private Integer id;
+    private String id;
     private String title;
     private String artist;
     private String album;
     private String album_img;
     private String filename;
 
-    public Song (Integer id, String title, String artist, String album, String album_img, String filename) {
+    public Song (String id, String title, String artist, String album, String album_img, String filename) {
         this.id = id;
         this.title = title;
         this.artist = artist;
@@ -21,7 +21,7 @@ public class Song {
 
     /*** getters & setters ***/
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 

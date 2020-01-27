@@ -10,14 +10,13 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -28,7 +27,10 @@ import com.example.mymusic.threads.PlayerThread;
 import com.example.mymusic.utils.Util;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -38,15 +40,21 @@ public class PlayerActivity extends AppCompatActivity {
 
     String URL;
     String API_KEY;
-    private String prevScreen;
+    Boolean isShuffle = false;
+
+    ArrayList<Song> songList;
 
     ProgressBar loadingBar;
     SeekBar mSeekBar;
     FloatingActionButton floatingPlayButton;
+    ImageView shuffleView;
+
     MediaPlayer mPlayer;
 
     Drawable playDrawable;
     Drawable pauseDrawable;
+    Drawable blueShuffleDrawable;
+    Drawable blackShuffleDrawable;
 
     private Disposable disposable;
     private Handler seekHandler;
@@ -63,7 +71,6 @@ public class PlayerActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         // Get a support ActionBar corresponding to this toolbar
-
         ActionBar ab = getSupportActionBar();
 
         // Enable the Up button
@@ -73,12 +80,23 @@ public class PlayerActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String songJson = intent.getStringExtra("SONG_JSON");
-        prevScreen = intent.getStringExtra("PREV_SCREEN");
+        String songJsonArr = intent.getStringExtra("SONG_JSON_ARR");
+
+        Type songListType = new TypeToken<ArrayList<Song>>(){}.getType();
+
+        songList = new Gson().fromJson(songJsonArr, songListType);
+        Log.e("songList", "" + songList);
+
+        shuffleView = findViewById(R.id.shuffleView);
 
         playDrawable = getResources().getDrawable(android.R.drawable.ic_media_play, null);
         pauseDrawable = getResources().getDrawable(android.R.drawable.ic_media_pause, null);
 
+        blueShuffleDrawable = getResources().getDrawable(R.drawable.ic_shuffle_blue_36dp, null);
+        blackShuffleDrawable = getResources().getDrawable(R.drawable.ic_shuffle_black_36dp, null);
+
         floatingPlayButton = findViewById(R.id.floatingPlayButton);
+
         loadingBar = findViewById(R.id.loadingBar);
         mSeekBar = findViewById(R.id.seekBar);
 
@@ -101,13 +119,14 @@ public class PlayerActivity extends AppCompatActivity {
 
         mPlayer = new MediaPlayer();
 
-        PlayerThread playerThread = new PlayerThread(mPlayer, URL, API_KEY, loadingBar, activityContext);
+        PlayerThread playerThread = new PlayerThread(mPlayer, URL, API_KEY, activityContext);
         playerThread.start();
 
         disposable = RxBus.subscribe(new Consumer<Object>() {
             @Override
             public void accept(Object o) throws Exception {
                 if (o == "PLAYER_READY") {
+                    loadingBar.setVisibility(View.GONE);
                     mSeekBar.setMax(mPlayer.getDuration() / 1000);
                     mPlayer.start();
                     timer.setText("00:00");
@@ -174,6 +193,16 @@ public class PlayerActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void shuffleClick(View v) {
+        isShuffle = !isShuffle;
+
+        if(isShuffle) {
+            shuffleView.setImageDrawable(blueShuffleDrawable);
+        } else {
+            shuffleView.setImageDrawable(blackShuffleDrawable);
+        }
     }
 
     @Override

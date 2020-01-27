@@ -58,7 +58,7 @@ public class DataService {
 
                             JSONObject jsonObject = response.optJSONObject(i);
 
-                            Integer id = jsonObject.optInt("id");
+                            String id = jsonObject.optString("_id");
                             String title = jsonObject.optString("title");
                             String artist = jsonObject.optString("artist");
                             String album = jsonObject.optString("album");

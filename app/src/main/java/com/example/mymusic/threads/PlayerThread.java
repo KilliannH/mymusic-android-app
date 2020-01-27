@@ -19,15 +19,13 @@ public class PlayerThread extends Thread {
 
     private String URL;
     private String API_KEY;
-    private ProgressBar loadingBar;
     private Context context;
     private MediaPlayer mPlayer;
     private RxBus rxBus;
 
-    public PlayerThread(MediaPlayer mPlayer, String url, String api_key, ProgressBar loadingBar, Context context) {
+    public PlayerThread(MediaPlayer mPlayer, String url, String api_key, Context context) {
         this.URL = url;
         this.API_KEY = api_key;
-        this.loadingBar = loadingBar;
         this.context = context;
         this.mPlayer = mPlayer;
     }
@@ -52,7 +50,6 @@ public class PlayerThread extends Thread {
             mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    loadingBar.setVisibility(View.GONE);
                     rxBus.publish("PLAYER_READY");
                 }
             });

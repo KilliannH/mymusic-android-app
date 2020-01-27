@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,8 +25,6 @@ import com.example.mymusic.bus.RxBus;
 import com.example.mymusic.models.Song;
 import com.example.mymusic.services.DataService;
 import com.google.gson.Gson;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -147,7 +144,14 @@ public class MainActivity extends AppCompatActivity {
 
         String songJson = new Gson().toJson(selectedSong);
 
+        ArrayList<Song> remindedSongs = songList;
+
+        remindedSongs.remove(selectedSong);
+
+        String songJsonArr = new Gson().toJson(remindedSongs);
+
         intent.putExtra("SONG_JSON", songJson);
+        intent.putExtra("SONG_JSON_ARR", songJsonArr);
         startActivity(intent);
     }
 
