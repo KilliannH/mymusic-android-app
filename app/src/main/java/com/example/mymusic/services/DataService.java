@@ -34,14 +34,10 @@ public class DataService {
         this.context = context;
     }
 
-    public ArrayList<Song> getSongs(String search) {
+    public ArrayList<Song> getSongs() {
         final ArrayList<Song> songList = new ArrayList<Song>();
 
-        if(search.equals("")) {
-            URL = Util.buildUrl("/songs", context);
-        } else {
-            URL = Util.buildUrl("/songs?search=" + search, context);
-        }
+        URL = Util.buildUrl("/songs", context);
         API_KEY = Util.getAPI_KEY(context);
 
         RequestQueue requestQueue = Volley.newRequestQueue(context);

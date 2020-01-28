@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
     ListView listView;
     AlertDialog dialog;
-    String searchQuery;
+
     ArrayList<Song> songList = new ArrayList<>();
     private Disposable disposable;
 
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
          final DataService dataService = new DataService(activityContext);
          RxBus.publish("MAIN_NOT_READY");
 
-        songList = dataService.getSongs("");
+        songList = dataService.getSongs();
 
 
         // create the search dialog
@@ -75,16 +75,15 @@ public class MainActivity extends AppCompatActivity {
         final EditText editText = (EditText) content.findViewById(R.id.dialog_search);
 
         // Inflate and set the layout for the dialog
-        // Pass null as the parent view because its going in the dialog layout
         builder.setView(content);
 
         builder.setTitle(R.string.string_search);
 
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                searchQuery = editText.getText().toString();
+                // searchQuery = editText.getText().toString();
                 RxBus.publish("DATA_NOT_READY");
-                songList = dataService.getSongs(searchQuery);
+                // songList = dataService.getSongs();
             }
         });
         builder.setNegativeButton(R.string.dismiss, new DialogInterface.OnClickListener() {
@@ -93,29 +92,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // dialog is created, not shown
         dialog = builder.create();
 
-        final TextView textView = (TextView) findViewById(R.id.query);
-        final Button clearButton = (Button) findViewById(R.id.clear_button);
-
-        textView.setText(R.string.string_search);
-        textView.setVisibility(View.GONE);
-        clearButton.setVisibility(View.GONE);
-
-        // Fires at startup & after a search query
+        // Fires at startup
         disposable = RxBus.subscribe(new Consumer<Object>() {
             @Override
             public void accept(Object o) throws Exception {
                 if (o == "DATA_READY") {
 
-                    if(searchQuery != null) {
-                        String query = getResources().getString(R.string.string_search) + " : " + searchQuery;
-                        textView.setText(query);
-                        textView.setVisibility(View.VISIBLE);
-                        clearButton.setVisibility(View.VISIBLE);
-                    }
                     // init the list view
-
                     listView = (ListView) findViewById(R.id.listview);
                     final SongsAdapter adapter = new SongsAdapter(activityContext, songList);
                     listView.setAdapter(adapter);
@@ -135,18 +121,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-       clearButton.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               RxBus.publish("DATA_NOT_READY");
-               textView.setText(R.string.string_search);
-               textView.setVisibility(View.GONE);
-               clearButton.setVisibility(View.GONE);
-               searchQuery = null;
-               songList = dataService.getSongs("");
-           }
-       });
     }
 
     @Override

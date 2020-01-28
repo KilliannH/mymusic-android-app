@@ -84,11 +84,10 @@ public class PlayerFragment extends Fragment {
                     }
 
                     if(mPlayer != null) {
-                        mPlayer.stop();
+                        if(mPlayer.isPlaying()) {
+                            mPlayer.stop();
+                        }
                         mPlayer.release();
-                        Log.e("player_state", "player not null");
-                    } else {
-                        Log.e("player_state", "player null");
                     }
 
                     mPlayer = new MediaPlayer();
@@ -114,7 +113,9 @@ public class PlayerFragment extends Fragment {
                     shuffleImg.setVisibility(View.VISIBLE);
 
                     timer.setText("00:00");
-                    mPlayer.start();
+                    if(!mPlayer.isPlaying()) {
+                        mPlayer.start();
+                    }
                     playImg.setImageDrawable(pauseDrawable);
 
                     seekHandler = new Handler(Looper.getMainLooper());
