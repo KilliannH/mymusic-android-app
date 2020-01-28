@@ -29,7 +29,6 @@ import com.example.mymusic.bus.RxBus;
 import com.example.mymusic.fragments.PlayerFragment;
 import com.example.mymusic.models.Song;
 import com.example.mymusic.services.DataService;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -128,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
                         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                             // TODO Auto-generated method stub
                             Song selectedSong = adapter.getItem(position);
+
                             playerFragment.getArguments().putString("SELECTED_SONG", selectedSong.toJSON());
                             RxBus.publish("PLAYER_REQUEST");
                         }

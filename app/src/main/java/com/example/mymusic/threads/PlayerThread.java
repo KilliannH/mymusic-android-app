@@ -39,7 +39,7 @@ public class PlayerThread extends Thread {
             Uri uri = Uri.parse(URL);
 
             mPlayer.setDataSource(context, uri, headers);
-            mPlayer.prepare();
+            mPlayer.prepareAsync();
 
             mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override

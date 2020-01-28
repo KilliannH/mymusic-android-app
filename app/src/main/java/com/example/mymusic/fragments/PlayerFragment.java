@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,13 +76,25 @@ public class PlayerFragment extends Fragment {
             public void accept(Object o) throws Exception {
                 if (o == "PLAYER_REQUEST") {
 
-                    mSeekBar.setVisibility(View.VISIBLE);
-                    noSongTextView.setVisibility(View.GONE);
+                    if(mSeekBar.getVisibility() == View.GONE) {
+                        mSeekBar.setVisibility(View.VISIBLE);
+                    }
+                    if(noSongTextView.getVisibility() == View.VISIBLE) {
+                        noSongTextView.setVisibility(View.GONE);
+                    }
 
+                    if(mPlayer != null) {
+                        mPlayer.stop();
+                        mPlayer.release();
+                        Log.e("player_state", "player not null");
+                    } else {
+                        Log.e("player_state", "player null");
+                    }
+
+                    mPlayer = new MediaPlayer();
                     Bundle bundle = getArguments();
                     Song song = new Gson().fromJson(bundle.getString("SELECTED_SONG"), Song.class);
 
-                    mPlayer = new MediaPlayer();
                     String URL = Util.buildUrl("/stream/" + song.getFilename(), getContext());
                     String API_KEY = Util.getAPI_KEY(getContext());
 
@@ -100,9 +113,9 @@ public class PlayerFragment extends Fragment {
                     playImg.setVisibility(View.VISIBLE);
                     shuffleImg.setVisibility(View.VISIBLE);
 
+                    timer.setText("00:00");
                     mPlayer.start();
                     playImg.setImageDrawable(pauseDrawable);
-                    timer.setText("--:--");
 
                     seekHandler = new Handler(Looper.getMainLooper());
                     seekRunnable = new Runnable() {
