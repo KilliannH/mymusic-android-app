@@ -13,4 +13,6 @@
     <string name="dismiss">Dismiss</string>
     <!-- Button -->
     <string name="action_clear">Clear</string>
+    <!-- Player -->
+    <string name="no_song">No song selected</string>
 </resources>

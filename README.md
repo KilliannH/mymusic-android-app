@@ -1,5 +1,3 @@
-remove search functionality
-
 impl shuffle for an efficient songList (don't replay a previously played song from the session)
 player should be independent from playerActivity
 impl Player Fragment

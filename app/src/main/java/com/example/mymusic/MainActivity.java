@@ -54,6 +54,11 @@ public class MainActivity extends AppCompatActivity {
 
         final Context activityContext = this;
 
+        final Fragment playerFragment = new PlayerFragment();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.add(R.id.fragment_container, playerFragment);
+        transaction.commit();
+
          final DataService dataService = new DataService(activityContext);
          RxBus.publish("MAIN_NOT_READY");
 
@@ -123,13 +128,8 @@ public class MainActivity extends AppCompatActivity {
                         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                             // TODO Auto-generated method stub
                             Song selectedSong = adapter.getItem(position);
-                            Bundle bundle = new Bundle();
-                            bundle.putString("SELECTED_SONG", selectedSong.toJSON());
-                            final Fragment playerFragment = new PlayerFragment();
-                            playerFragment.setArguments(bundle);
-                            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                            transaction.add(R.id.fragment_container, playerFragment);
-                            transaction.commit();
+                            playerFragment.getArguments().putString("SELECTED_SONG", selectedSong.toJSON());
+                            RxBus.publish("PLAYER_REQUEST");
                         }
                     });
                 }
