@@ -199,7 +199,9 @@ public class PlayerFragment extends Fragment {
         super.onDestroy();
         playerRequestDisposable.dispose();
         playerCbDisposable.dispose();
-        seekHandler.removeCallbacks(seekRunnable);
+        if(seekHandler != null) {
+            seekHandler.removeCallbacks(seekRunnable);
+        }
         RxBus.publish("PLAYER_NOT_READY");
     }
 }

@@ -15,4 +15,11 @@
     <string name="action_clear">Clear</string>
     <!-- Player -->
     <string name="no_song">No song selected</string>
+    <!-- add -->
+    <string name="add_title">Title</string>
+    <string name="add_artist">Artist</string>
+    <string name="add_album">Album</string>
+    <string name="add_album_img">Album Image Url</string>
+    <string name="add_filename">Filename</string>
+
 </resources>

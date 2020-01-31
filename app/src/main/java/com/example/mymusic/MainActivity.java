@@ -29,6 +29,7 @@ import com.example.mymusic.bus.RxBus;
 import com.example.mymusic.fragments.PlayerFragment;
 import com.example.mymusic.models.Song;
 import com.example.mymusic.services.DataService;
+import com.example.mymusic.services.ShuffleService;
 
 import java.util.ArrayList;
 
@@ -101,6 +102,15 @@ public class MainActivity extends AppCompatActivity {
             public void accept(Object o) throws Exception {
                 if (o == "DATA_READY") {
 
+                    // init shuffleService by adding all songs
+                    if(ShuffleService.getSongs().size() == 0) {
+                        for (int i = 0; i < songList.size(); i++) {
+                            ShuffleService.addSong(songList.get(i));
+                        }
+                    }
+
+                    Log.e("suffleService", ShuffleService.getSongs().toString());
+
                     // init the list view
                     listView = (ListView) findViewById(R.id.listview);
                     final SongsAdapter adapter = new SongsAdapter(activityContext, songList);
@@ -115,6 +125,9 @@ public class MainActivity extends AppCompatActivity {
                             Song selectedSong = adapter.getItem(position);
 
                             playerFragment.getArguments().putString("SELECTED_SONG", selectedSong.toJSON());
+                            if(ShuffleService.getIsShuffle()) {
+                                ShuffleService.removeSong(selectedSong);
+                            }
                             RxBus.publish("PLAYER_REQUEST");
                         }
                     });
@@ -170,6 +183,8 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_add:
+                Intent intent = new Intent(this, AddSongActivity.class);
+                startActivity(intent);
                 return true;
 
             case R.id.action_settings:
