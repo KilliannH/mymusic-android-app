@@ -2,10 +2,13 @@ package com.example.mymusic.utils;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Util {
 
@@ -48,4 +51,15 @@ public class Util {
         return API_KEY;
     }
 
+    public static boolean validateUrl(String url) {
+        Pattern p = Pattern.compile("(?:[https\\:\\/\\/])|(?:(?:http\\:\\/\\/))");
+        Matcher m = p.matcher(url);
+        return m.find();
+    }
+
+    public static boolean validateMp3(String filename) {
+        Pattern p = Pattern.compile(".*\\.mp3$");
+        Matcher m = p.matcher(filename);
+        return m.matches();
+    }
 }

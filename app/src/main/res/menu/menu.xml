@@ -9,11 +9,6 @@
         android:icon="@drawable/ic_add_black_24dp"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/action_search"
-        android:title="@string/string_search"
-        android:icon="@drawable/ic_search_black_24dp"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/action_settings"
         android:title="@string/action_settings"
         app:showAsAction="never|withText" />

@@ -1,5 +1,7 @@
 package com.example.mymusic.models;
 
+import androidx.annotation.Nullable;
+
 public class Song {
 
     private String id;
@@ -16,7 +18,15 @@ public class Song {
         this.album = album;
         this.album_img = album_img;
         this.filename = filename;
+    }
 
+    // used for new song
+    public Song (String title, String artist, String album, String album_img, String filename) {
+        this.title = title;
+        this.artist = artist;
+        this.album = album;
+        this.album_img = album_img;
+        this.filename = filename;
     }
 
     /*** getters & setters ***/
@@ -76,13 +86,23 @@ public class Song {
                 '}';
     }
 
-    public String toJSON() {
-        return "{" +
-                "\"id\":" + " \"" + id + "\"" +
-                ", \"title\":" + " \"" + title + "\"" +
-                ", \"artist\":" + " \"" + artist + "\"" +
-                ", \"album_img\":" + " \"" + album_img +  "\"" +
-                ", \"filename\":" + " \"" + filename + "\"" +
-                "}";
+    public String toJSON(@Nullable String youtube_url) {
+        if(this.id != null) {
+            return "{" +
+                    "\"id\":" + " \"" + id + "\"" +
+                    ", \"title\":" + " \"" + title + "\"" +
+                    ", \"artist\":" + " \"" + artist + "\"" +
+                    ", \"album_img\":" + " \"" + album_img +  "\"" +
+                    ", \"filename\":" + " \"" + filename + "\"" +
+                    "}";
+        } else {
+            return "{" +
+                    "\"title\":" + " \"" + title + "\"" +
+                    ", \"artist\":" + " \"" + artist + "\"" +
+                    ", \"album_img\":" + " \"" + album_img +  "\"" +
+                    ", \"filename\":" + " \"" + filename + "\"" +
+                    ", \"youtube_url\":" + " \"" + youtube_url + "\"" +
+                    "}";
+        }
     }
 }

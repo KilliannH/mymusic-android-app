@@ -70,16 +70,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/add_album" />
 
-    <Button
-        android:id="@+id/button"
+    <EditText
+        android:id="@+id/add_youtube_url"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
+        android:hint="@string/add_youtube"
+        android:inputType="text"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/add_filename"
+        app:layout_constraintTop_toBottomOf="@+id/add_album_img" />
+
+    <Button
+        android:id="@+id/add_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="250dp"
         android:backgroundTint="@color/colorAccent"
         android:text="@string/action_add"
         android:textColor="@android:color/white"
-        app:layout_constraintStart_toEndOf="@+id/add_filename"
-        app:layout_constraintTop_toBottomOf="@+id/add_album_img" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
