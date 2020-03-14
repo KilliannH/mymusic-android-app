@@ -1,10 +1,7 @@
 package com.example.mymusic.services;
 
 import android.content.Context;
-import android.net.Uri;
 import android.util.Log;
-
-import androidx.annotation.Nullable;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -18,9 +15,6 @@ import com.android.volley.toolbox.Volley;
 import com.example.mymusic.bus.RxBus;
 import com.example.mymusic.models.Song;
 import com.example.mymusic.utils.Util;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 
 import android.util.Log;
@@ -20,16 +21,17 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.example.mymusic.PlayerActivity;
 
 import com.example.mymusic.adapters.SongsAdapter;
 import com.example.mymusic.bus.RxBus;
-import com.example.mymusic.fragments.PlayerFragment;
 import com.example.mymusic.models.Song;
 import com.example.mymusic.services.DataService;
 import com.example.mymusic.services.ShuffleService;
 import com.example.mymusic.utils.Util;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -79,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         // on builder, we don't want the activity context, but it class instead
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 
-        LayoutInflater inflater = this.getLayoutInflater();
+        final LayoutInflater inflater = this.getLayoutInflater();
         View content = inflater.inflate(R.layout.dialog_add, null);
 
         title = (EditText) content.findViewById(R.id.add_title);
@@ -107,11 +109,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         dialog_add = builder.create();
-
-        final Fragment playerFragment = new PlayerFragment();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.fragment_container, playerFragment);
-        transaction.commit();
 
          dataService = new DataService(activityContext);
          RxBus.publish("MAIN_NOT_READY");
@@ -142,9 +139,7 @@ public class MainActivity extends AppCompatActivity {
                         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                             // TODO Auto-generated method stub
                             Song selectedSong = adapter.getItem(position);
-
-                            playerFragment.getArguments().putString("SELECTED_SONG", selectedSong.toJSON(null));
-                            RxBus.publish("PLAYER_REQUEST");
+                            dispatchSong(selectedSong);
                         }
                     });
                 }
@@ -172,6 +167,23 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    // send song to the player activity
+    public void dispatchSong(Song selectedSong) {
+        Intent intent = new Intent(this, PlayerActivity.class);
+
+        String songJson = new Gson().toJson(selectedSong);
+
+        ArrayList<Song> remindedSongs = songList;
+
+        remindedSongs.remove(selectedSong);
+
+        String songJsonArr = new Gson().toJson(remindedSongs);
+
+        intent.putExtra("SONG_JSON", songJson);
+        intent.putExtra("SONG_JSON_ARR", songJsonArr);
+        startActivity(intent);
     }
 
     private void runLoadingState() {

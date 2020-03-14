@@ -93,15 +93,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/seekBar" />
 
-    <ImageView
-        android:id="@+id/shuffleView"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingPrevButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="42dp"
-        android:layout_marginEnd="72dp"
-        android:onClick="shuffleClick"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="30dp"
+        android:clickable="true"
+        app:backgroundTint="#FAFAFA"
+        app:layout_constraintEnd_toStartOf="@+id/floatingPlayButton"
         app:layout_constraintTop_toBottomOf="@+id/seekBar"
-        app:srcCompat="@drawable/ic_shuffle_black_36dp" />
+        app:srcCompat="@drawable/ic_skip_previous_black_36dp" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingNextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="32dp"
+        android:clickable="true"
+        app:backgroundTint="#FAFAFA"
+        app:layout_constraintStart_toEndOf="@+id/floatingPlayButton"
+        app:layout_constraintTop_toBottomOf="@+id/seekBar"
+        app:srcCompat="@drawable/ic_skip_next_black_36dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
