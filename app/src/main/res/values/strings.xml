@@ -13,15 +13,21 @@
     <string name="dismiss">Dismiss</string>
     <!-- Button -->
     <string name="action_clear">Clear</string>
+    <!-- Update -->
+    <string name="action_update">Update</string>
     <!-- Player -->
     <string name="no_song">No song selected</string>
     <!-- add -->
+    <string name="add_label">Add new song</string>
     <string name="add_title">Title</string>
     <string name="add_artist">Artist</string>
     <string name="add_album">Album</string>
-    <string name="add_album_img">Album Image Url</string>
+    <string name="add_album_img">Album Url</string>
     <string name="add_youtube">Youtube Url</string>
-    <string name="add_filename">Filename</string>
+    <string name="add_filename">File Name</string>
+    <!-- edit -->
+    <string name="edit_label">Edit song</string>
+
     <!-- Load -->
     <string name="loading">Loading</string>
 

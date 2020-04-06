@@ -42,20 +42,9 @@ public class MainActivity extends AppCompatActivity {
 
     ListView listView;
 
-    private boolean loadingState = false;
-
-    EditText title;
-    EditText artist;
-    EditText album;
-    EditText album_img;
-    EditText filename;
-    EditText youtube_url;
-
     DataService dataService;
 
     ProgressBar progressBar;
-
-    private AlertDialog dialog_add;
 
     ArrayList<Song> songList = new ArrayList<>();
     private Disposable dataDisposable;
@@ -77,38 +66,6 @@ public class MainActivity extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         runLoadingState();
-
-        // on builder, we don't want the activity context, but it class instead
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-
-        final LayoutInflater inflater = this.getLayoutInflater();
-        View content = inflater.inflate(R.layout.dialog_add, null);
-
-        title = (EditText) content.findViewById(R.id.add_title);
-        artist = (EditText) content.findViewById(R.id.add_artist);
-        album = (EditText) content.findViewById(R.id.add_album);
-        album_img = (EditText) content.findViewById(R.id.add_album_img);
-        filename = (EditText) content.findViewById(R.id.add_filename);
-        youtube_url = (EditText) content.findViewById(R.id.add_youtube_url);
-
-        builder.setView(content);
-        builder.setTitle(R.string.action_add);
-
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                validateAndAddSong();
-                if(loadingState) {
-                    runLoadingState();
-                }
-            }
-        });
-        builder.setNegativeButton(R.string.dismiss, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-            }
-        });
-
-        dialog_add = builder.create();
 
          dataService = new DataService(activityContext);
          RxBus.publish("MAIN_NOT_READY");
@@ -192,32 +149,6 @@ public class MainActivity extends AppCompatActivity {
         listView.setVisibility(View.VISIBLE);
     }
 
-    private void validateAndAddSong() {
-        String opt_title = title.getText().toString();
-        String opt_artist = artist.getText().toString();
-        String opt_album = album.getText().toString();
-        String opt_album_img = album_img.getText().toString();
-        String opt_filename = filename.getText().toString();
-        String opt_youtube_url = youtube_url.getText().toString();
-
-        if(opt_title.isEmpty() || opt_artist.isEmpty() || opt_album.isEmpty()
-                || opt_album_img.isEmpty() || opt_filename.isEmpty() || opt_youtube_url.isEmpty()) {
-            Toast.makeText(getApplicationContext(), "you must fill all fields", Toast.LENGTH_SHORT).show();
-        } else {
-            if (!Util.validateUrl(opt_album_img)) {
-                Toast.makeText(getApplicationContext(), "you must use a valid image url", Toast.LENGTH_SHORT).show();
-            } else if (!Util.validateUrl(opt_youtube_url)) {
-                Toast.makeText(getApplicationContext(), "you must use a valid youtube url", Toast.LENGTH_SHORT).show();
-            } else if (!Util.validateMp3(opt_filename)) {
-                Toast.makeText(getApplicationContext(), "invalid filename", Toast.LENGTH_SHORT).show();
-            } else {
-                Song newSong = new Song(opt_title, opt_artist, opt_album, opt_album_img, opt_filename);
-                dataService.addSong(newSong, opt_youtube_url);
-                loadingState = true;
-            }
-        }
-    }
-
     @Override
     public void onPause() {
         super.onPause();
@@ -238,8 +169,22 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        Song optSong = (Song) listView.getItemAtPosition(info.position);
+        String songJson = "";
+        for(int i = 0; i < songList.size(); i++) {
+            Song song = songList.get(i);
+            if(song.getId().equals(optSong.getId())) {
+                songJson = song.toJSON("");
+            }
+        }
+
         switch (item.getItemId()) {
             case R.id.action_edit:
+                Intent intent = new Intent(this, AddEditActivity.class);
+                intent.putExtra("SONG_JSON", songJson);
+                intent.putExtra("activity", "MAIN");
+                startActivity(intent);
                 return true;
             case R.id.action_remove:
                 return true;

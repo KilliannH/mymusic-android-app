@@ -32,9 +32,11 @@ public class SongsAdapter  extends ArrayAdapter<Song> {
         // Lookup view for data population
         TextView title = (TextView) convertView.findViewById(R.id.title);
         TextView artist = (TextView) convertView.findViewById(R.id.artist);
+        TextView songId = (TextView) convertView.findViewById(R.id.song_id);
         ImageView album = (ImageView) convertView.findViewById(R.id.album);
 
         // Populate the data into the template view using the data object
+        songId.setText(song.getId());
         title.setText(song.getTitle());
         artist.setText(song.getArtist());
         Glide.with(getContext()).load(song.getAlbum_img()).into(album);

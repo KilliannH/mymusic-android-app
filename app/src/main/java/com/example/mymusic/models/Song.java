@@ -92,6 +92,7 @@ public class Song {
                     "\"id\":" + " \"" + id + "\"" +
                     ", \"title\":" + " \"" + title + "\"" +
                     ", \"artist\":" + " \"" + artist + "\"" +
+                    ", \"album\":" + " \"" + album + "\"" +
                     ", \"album_img\":" + " \"" + album_img +  "\"" +
                     ", \"filename\":" + " \"" + filename + "\"" +
                     "}";
@@ -99,6 +100,7 @@ public class Song {
             return "{" +
                     "\"title\":" + " \"" + title + "\"" +
                     ", \"artist\":" + " \"" + artist + "\"" +
+                    ", \"album\":" + " \"" + album + "\"" +
                     ", \"album_img\":" + " \"" + album_img +  "\"" +
                     ", \"filename\":" + " \"" + filename + "\"" +
                     ", \"youtube_url\":" + " \"" + youtube_url + "\"" +
