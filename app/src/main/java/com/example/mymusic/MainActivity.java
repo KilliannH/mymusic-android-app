@@ -175,11 +175,7 @@ public class MainActivity extends AppCompatActivity {
 
         String songJson = new Gson().toJson(selectedSong);
 
-        ArrayList<Song> remindedSongs = songList;
-
-        remindedSongs.remove(selectedSong);
-
-        String songJsonArr = new Gson().toJson(remindedSongs);
+        String songJsonArr = new Gson().toJson(songList);
 
         intent.putExtra("SONG_JSON", songJson);
         intent.putExtra("SONG_JSON_ARR", songJsonArr);
@@ -266,7 +262,9 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
 
             case R.id.action_add:
-                dialog_add.show();
+                Intent intent = new Intent(this, AddEditActivity.class);
+                intent.putExtra("activity", "MAIN");
+                startActivity(intent);
                 return true;
 
             default:

@@ -42,6 +42,8 @@ public class PlayerActivity extends AppCompatActivity {
     String API_KEY;
 
     ArrayList<Song> songList;
+    String songJson;
+    Song song;
 
     ProgressBar loadingBar;
     SeekBar mSeekBar;
@@ -77,7 +79,7 @@ public class PlayerActivity extends AppCompatActivity {
         }
 
         Intent intent = getIntent();
-        String songJson = intent.getStringExtra("SONG_JSON");
+        songJson = intent.getStringExtra("SONG_JSON");
         String songJsonArr = intent.getStringExtra("SONG_JSON_ARR");
 
         Type songListType = new TypeToken<ArrayList<Song>>(){}.getType();
@@ -97,7 +99,7 @@ public class PlayerActivity extends AppCompatActivity {
 
         loadingBar.setVisibility(View.VISIBLE);
 
-        Song song = new Gson().fromJson(songJson, Song.class);
+        song = new Gson().fromJson(songJson, Song.class);
 
         URL = Util.buildUrl("/stream/" + song.getFilename(), activityContext);
         API_KEY = Util.getAPI_KEY(activityContext);
@@ -158,6 +160,7 @@ public class PlayerActivity extends AppCompatActivity {
                                 mPlayer.seekTo(progress * 1000);
                             }
 
+                            // if end of the song reached, skip to the next song if exists
                             if (mPlayer != null && progress >= (mPlayer.getDuration() / 1000)) {
                                 mPlayer.pause();
                                 floatingPlayButton.setImageDrawable(playDrawable);
@@ -210,12 +213,38 @@ public class PlayerActivity extends AppCompatActivity {
         });
     }
 
-    public int skipNext() {
-        return 0;
+    public void dispatchSong(Song selectedSong) {
+        Intent intent = new Intent(this, PlayerActivity.class);
+
+        String songJson = new Gson().toJson(selectedSong);
+
+        String songJsonArr = new Gson().toJson(songList);
+
+        intent.putExtra("SONG_JSON", songJson);
+        intent.putExtra("SONG_JSON_ARR", songJsonArr);
+        startActivity(intent);
     }
 
-    public int skipPrev() {
-        return 0;
+    public void skipNext() {
+        for(int i = 0; i < songList.size(); i++) {
+            if(song.getId().equals(songList.get(i).getId())) {
+                if(i != songList.size() -1) {
+                    Song nextSong = songList.get(i + 1);
+                    dispatchSong(nextSong);
+                }
+            }
+        }
+    }
+
+    public void skipPrev() {
+        for(int i = 0; i < songList.size(); i++) {
+            if(song.getId().equals(songList.get(i).getId())) {
+                if(i != 0) {
+                    Song prevSong = songList.get(i - 1);
+                    dispatchSong(prevSong);
+                }
+            }
+        }
     }
 
     @Override
@@ -239,6 +268,13 @@ public class PlayerActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
+
+            case R.id.action_add:
+                Intent intent = new Intent(this, AddEditActivity.class);
+                intent.putExtra("activity", "PLAYER");
+                intent.putExtra("SONG_JSON", songJson);
+                startActivity(intent);
+                return true;
 
             default:
                 // If we got here, the user's action was not recognized.
