@@ -4,7 +4,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,13 +12,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.mymusic.bus.RxBus;
 import com.example.mymusic.models.Song;
 import com.example.mymusic.services.DataService;
 import com.example.mymusic.utils.Util;
 import com.google.gson.Gson;
+
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Consumer;
 
 public class AddEditActivity extends AppCompatActivity {
 
@@ -30,6 +34,8 @@ public class AddEditActivity extends AppCompatActivity {
     TextView label;
     Button button;
 
+    ProgressBar progressBar;
+
     EditText title;
     EditText artist;
     EditText album;
@@ -38,7 +44,8 @@ public class AddEditActivity extends AppCompatActivity {
     EditText youtube_url;
 
     private DataService dataService;
-    private Boolean loadingState = false;
+
+    Disposable disposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,18 +63,20 @@ public class AddEditActivity extends AppCompatActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        DataService dataService = new DataService(this);
+        dataService = new DataService(this);
 
         Intent intent = getIntent();
         prevActivity = intent.getStringExtra("activity");
         songJson = intent.getStringExtra("SONG_JSON");
+
+        button = findViewById(R.id.add_edit_button);
+        progressBar = findViewById(R.id.progressBar);
 
         if(songJson != null && prevActivity.equals("MAIN")) {
             Log.e("debug song", "" + songJson);
             editedSong = new Gson().fromJson(songJson, Song.class);
 
             label = findViewById(R.id.add_label);
-            button = findViewById(R.id.add_edit_button);
 
             title = findViewById(R.id.add_title);
             artist = findViewById(R.id.add_artist);
@@ -86,9 +95,66 @@ public class AddEditActivity extends AppCompatActivity {
             filename.setText(editedSong.getFilename());
             youtube_url.setVisibility(View.GONE);
         }
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                validateAndAddOrUpdateSong();
+            }
+        });
+
+        disposable = RxBus.subscribe(new Consumer<Object>() {
+            @Override
+            public void accept(Object o) throws Exception {
+                if (o == "DATA_RECEIVED") {
+
+                    runLoadedState();
+                    Toast.makeText(getApplicationContext(), "success!", Toast.LENGTH_SHORT).show();
+                }
+
+                if (o == "DATA_ERROR") {
+
+                    runLoadedState();
+                    Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
-    private void validateAndAddSong() {
+    private void runLoadedState() {
+        title.setActivated(true);
+        artist.setActivated(true);
+        album.setActivated(true);
+        album_img.setActivated(true);
+        filename.setActivated(true);
+
+        if(songJson == null) {
+            youtube_url.setActivated(true);
+        }
+
+        button.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
+    }
+
+    private void runLoadingState() {
+        title.setActivated(false);
+        artist.setActivated(false);
+        album.setActivated(false);
+        album_img.setActivated(false);
+        filename.setActivated(false);
+
+        if(songJson == null) {
+            youtube_url.setActivated(false);
+        }
+
+        button.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void validateAndAddOrUpdateSong() {
+
+        runLoadingState();
+
         String opt_title = title.getText().toString();
         String opt_artist = artist.getText().toString();
         String opt_album = album.getText().toString();
@@ -97,19 +163,28 @@ public class AddEditActivity extends AppCompatActivity {
         String opt_youtube_url = youtube_url.getText().toString();
 
         if(opt_title.isEmpty() || opt_artist.isEmpty() || opt_album.isEmpty()
-                || opt_album_img.isEmpty() || opt_filename.isEmpty() || opt_youtube_url.isEmpty()) {
+                || opt_album_img.isEmpty() || opt_filename.isEmpty() || (opt_youtube_url.isEmpty() && songJson == null)) {
             Toast.makeText(getApplicationContext(), "you must fill all fields", Toast.LENGTH_SHORT).show();
         } else {
             if (!Util.validateUrl(opt_album_img)) {
                 Toast.makeText(getApplicationContext(), "you must use a valid image url", Toast.LENGTH_SHORT).show();
-            } else if (!Util.validateUrl(opt_youtube_url)) {
+            } else if (!Util.validateUrl(opt_youtube_url) && songJson == null) {
                 Toast.makeText(getApplicationContext(), "you must use a valid youtube url", Toast.LENGTH_SHORT).show();
             } else if (!Util.validateMp3(opt_filename)) {
                 Toast.makeText(getApplicationContext(), "invalid filename", Toast.LENGTH_SHORT).show();
             } else {
-                Song newSong = new Song(opt_title, opt_artist, opt_album, opt_album_img, opt_filename);
-                dataService.addSong(newSong, opt_youtube_url);
-                loadingState = true;
+                if(songJson != null) {
+                    // we are on update state
+                    editedSong.setTitle(opt_title);
+                    editedSong.setArtist(opt_artist);
+                    editedSong.setAlbum(opt_album);
+                    editedSong.setAlbum_img(opt_album_img);
+                    editedSong.setFilename(opt_filename);
+                    dataService.editSong(editedSong);
+                } else {
+                    Song newSong = new Song(opt_title, opt_artist, opt_album, opt_album_img, opt_filename);
+                    dataService.addSong(newSong, opt_youtube_url);
+                }
             }
         }
     }
@@ -127,12 +202,11 @@ public class AddEditActivity extends AppCompatActivity {
         switch (item.getItemId()) {
 
             case android.R.id.home:
-                Intent intent;
                 if(prevActivity.equals("MAIN")) {
-                    intent = new Intent(this, MainActivity.class);
+                    Intent intent = new Intent(this, MainActivity.class);
                     startActivity(intent);
                 } else {
-                    intent = new Intent(this, PlayerActivity.class);
+                    Intent intent = new Intent(this, PlayerActivity.class);
                     intent.putExtra("SONG_JSON", songJson);
                     startActivity(intent);
                 }
@@ -143,5 +217,12 @@ public class AddEditActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
 
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        disposable.dispose();
+        RxBus.publish("DATA_NOT_READY");
     }
 }

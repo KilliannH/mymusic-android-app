@@ -1,36 +1,26 @@
 package com.example.mymusic;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
-
-import com.example.mymusic.PlayerActivity;
 
 import com.example.mymusic.adapters.SongsAdapter;
 import com.example.mymusic.bus.RxBus;
 import com.example.mymusic.models.Song;
 import com.example.mymusic.services.DataService;
 import com.example.mymusic.services.ShuffleService;
-import com.example.mymusic.utils.Util;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -48,8 +38,6 @@ public class MainActivity extends AppCompatActivity {
 
     ArrayList<Song> songList = new ArrayList<>();
     private Disposable dataDisposable;
-    private Disposable addSuccessDisposable;
-    private Disposable addErrorDisposable;
 
 
     @Override
@@ -102,28 +90,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-        addSuccessDisposable = RxBus.subscribe(new Consumer<Object>() {
-            @Override
-            public void accept(Object o) throws Exception {
-                if (o == "DATA_RECEIVED") {
-
-                    dataService.getSongs();
-                    Toast.makeText(getApplicationContext(), "success!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        addErrorDisposable = RxBus.subscribe(new Consumer<Object>() {
-            @Override
-            public void accept(Object o) throws Exception {
-                if (o == "DATA_ERROR") {
-
-                    runLoadedState();
-                    Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
     }
 
     // send song to the player activity
@@ -153,8 +119,6 @@ public class MainActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         dataDisposable.dispose();
-        addSuccessDisposable.dispose();
-        addErrorDisposable.dispose();
         RxBus.publish("DATA_NOT_READY");
     }
 

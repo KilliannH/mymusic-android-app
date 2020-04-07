@@ -144,4 +144,55 @@ public class DataService {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         requestQueue.add(objectRequest);
     }
+
+    public void editSong(Song editedSong) {
+        URL = Util.buildUrl("/songs/" + editedSong.getId(), context);
+        API_KEY = Util.getAPI_KEY(context);
+
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        JSONObject jsonObject = new JSONObject();
+
+        try {
+            jsonObject = new JSONObject(editedSong.toJSON(null));
+        } catch (JSONException err) {
+            Log.d("Error", err.toString());
+        }
+
+        JsonObjectRequest objectRequest = new JsonObjectRequest(
+                Request.Method.PUT,
+                URL,
+                jsonObject,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        Log.e("Response", "" + response.toString());
+
+                        boolean success = response.optBoolean("success");
+                        if (success) {
+                            RxBus.publish("DATA_RECEIVED");
+                        } else {
+                            RxBus.publish("DATA_ERROR");
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("Error", error.toString());
+                        RxBus.publish("DATA_ERROR");
+                    }
+                }
+        ) {
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Authorization", API_KEY);
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+        requestQueue.add(objectRequest);
+    }
 }
