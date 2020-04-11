@@ -6,32 +6,28 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mymusic.bus.RxBus;
 import com.example.mymusic.models.Song;
 import com.example.mymusic.services.DataService;
 import com.example.mymusic.utils.Util;
-import com.google.gson.Gson;
 
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Consumer;
 
-public class AddEditActivity extends AppCompatActivity {
+public class AddActivity extends AppCompatActivity {
 
-    String songJson;
     String prevActivity;
-    Song editedSong;
+    String songJson;
+    String songJsonArr;
 
-    TextView label;
     Button button;
 
     ProgressBar progressBar;
@@ -50,7 +46,7 @@ public class AddEditActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_edit);
+        setContentView(R.layout.activity_add);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -67,39 +63,26 @@ public class AddEditActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         prevActivity = intent.getStringExtra("activity");
-        songJson = intent.getStringExtra("SONG_JSON");
 
-        button = findViewById(R.id.add_edit_button);
+        if(!prevActivity.equals("MAIN")) {
+            songJson = intent.getStringExtra("SONG_JSON");
+            songJsonArr = intent.getStringExtra("SONG_JSON_ARR");
+        }
+
+        button = findViewById(R.id.add_button);
         progressBar = findViewById(R.id.progressBar);
 
-        if(songJson != null && prevActivity.equals("MAIN")) {
-            Log.e("debug song", "" + songJson);
-            editedSong = new Gson().fromJson(songJson, Song.class);
-
-            label = findViewById(R.id.add_label);
-
-            title = findViewById(R.id.add_title);
-            artist = findViewById(R.id.add_artist);
-            album = findViewById(R.id.add_album);
-            album_img = findViewById(R.id.add_album_img);
-            filename = findViewById(R.id.add_filename);
-            youtube_url = findViewById(R.id.add_youtube_url);
-
-            label.setText(R.string.edit_label);
-            button.setText(R.string.action_update);
-
-            title.setText(editedSong.getTitle());
-            artist.setText(editedSong.getArtist());
-            album.setText(editedSong.getAlbum());
-            album_img.setText(editedSong.getAlbum_img());
-            filename.setText(editedSong.getFilename());
-            youtube_url.setVisibility(View.GONE);
-        }
+        title = findViewById(R.id.add_title);
+        artist = findViewById(R.id.add_artist);
+        album = findViewById(R.id.add_album);
+        album_img = findViewById(R.id.add_album_img);
+        filename = findViewById(R.id.add_filename);
+        youtube_url = findViewById(R.id.add_youtube_url);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                validateAndAddOrUpdateSong();
+                validateAndAddSong();
             }
         });
 
@@ -127,10 +110,7 @@ public class AddEditActivity extends AppCompatActivity {
         album.setActivated(true);
         album_img.setActivated(true);
         filename.setActivated(true);
-
-        if(songJson == null) {
-            youtube_url.setActivated(true);
-        }
+        youtube_url.setActivated(true);
 
         button.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
@@ -142,16 +122,13 @@ public class AddEditActivity extends AppCompatActivity {
         album.setActivated(false);
         album_img.setActivated(false);
         filename.setActivated(false);
-
-        if(songJson == null) {
-            youtube_url.setActivated(false);
-        }
+        youtube_url.setActivated(false);
 
         button.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
     }
 
-    private void validateAndAddOrUpdateSong() {
+    private void validateAndAddSong() {
 
         runLoadingState();
 
@@ -163,28 +140,18 @@ public class AddEditActivity extends AppCompatActivity {
         String opt_youtube_url = youtube_url.getText().toString();
 
         if(opt_title.isEmpty() || opt_artist.isEmpty() || opt_album.isEmpty()
-                || opt_album_img.isEmpty() || opt_filename.isEmpty() || (opt_youtube_url.isEmpty() && songJson == null)) {
+                || opt_album_img.isEmpty() || opt_filename.isEmpty() || opt_youtube_url.isEmpty()) {
             Toast.makeText(getApplicationContext(), "you must fill all fields", Toast.LENGTH_SHORT).show();
         } else {
             if (!Util.validateUrl(opt_album_img)) {
                 Toast.makeText(getApplicationContext(), "you must use a valid image url", Toast.LENGTH_SHORT).show();
-            } else if (!Util.validateUrl(opt_youtube_url) && songJson == null) {
+            } else if (!Util.validateUrl(opt_youtube_url)) {
                 Toast.makeText(getApplicationContext(), "you must use a valid youtube url", Toast.LENGTH_SHORT).show();
             } else if (!Util.validateMp3(opt_filename)) {
                 Toast.makeText(getApplicationContext(), "invalid filename", Toast.LENGTH_SHORT).show();
             } else {
-                if(songJson != null) {
-                    // we are on update state
-                    editedSong.setTitle(opt_title);
-                    editedSong.setArtist(opt_artist);
-                    editedSong.setAlbum(opt_album);
-                    editedSong.setAlbum_img(opt_album_img);
-                    editedSong.setFilename(opt_filename);
-                    dataService.editSong(editedSong);
-                } else {
-                    Song newSong = new Song(opt_title, opt_artist, opt_album, opt_album_img, opt_filename);
-                    dataService.addSong(newSong, opt_youtube_url);
-                }
+                Song newSong = new Song(opt_title, opt_artist, opt_album, opt_album_img, opt_filename);
+                dataService.addSong(newSong, opt_youtube_url);
             }
         }
     }
@@ -208,6 +175,7 @@ public class AddEditActivity extends AppCompatActivity {
                 } else {
                     Intent intent = new Intent(this, PlayerActivity.class);
                     intent.putExtra("SONG_JSON", songJson);
+                    intent.putExtra("SONG_JSON_ARR", songJsonArr);
                     startActivity(intent);
                 }
 

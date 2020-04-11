@@ -43,6 +43,7 @@ public class PlayerActivity extends AppCompatActivity {
 
     ArrayList<Song> songList;
     String songJson;
+    String songJsonArr;
     Song song;
 
     ProgressBar loadingBar;
@@ -80,7 +81,7 @@ public class PlayerActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         songJson = intent.getStringExtra("SONG_JSON");
-        String songJsonArr = intent.getStringExtra("SONG_JSON_ARR");
+        songJsonArr = intent.getStringExtra("SONG_JSON_ARR");
 
         Type songListType = new TypeToken<ArrayList<Song>>(){}.getType();
 
@@ -216,9 +217,7 @@ public class PlayerActivity extends AppCompatActivity {
     public void dispatchSong(Song selectedSong) {
         Intent intent = new Intent(this, PlayerActivity.class);
 
-        String songJson = new Gson().toJson(selectedSong);
-
-        String songJsonArr = new Gson().toJson(songList);
+        String songJson = selectedSong.toJSON(null);
 
         intent.putExtra("SONG_JSON", songJson);
         intent.putExtra("SONG_JSON_ARR", songJsonArr);
@@ -270,9 +269,10 @@ public class PlayerActivity extends AppCompatActivity {
         switch (item.getItemId()) {
 
             case R.id.action_add:
-                Intent intent = new Intent(this, AddEditActivity.class);
+                Intent intent = new Intent(this, AddActivity.class);
                 intent.putExtra("activity", "PLAYER");
                 intent.putExtra("SONG_JSON", songJson);
+                intent.putExtra("SONG_JSON_ARRAY", songJsonArr);
                 startActivity(intent);
                 return true;
 

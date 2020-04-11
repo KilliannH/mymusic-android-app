@@ -11,7 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AddEditActivity"></activity>
+        <activity android:name=".AddActivity"></activity>
         <activity android:name=".PlayerActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

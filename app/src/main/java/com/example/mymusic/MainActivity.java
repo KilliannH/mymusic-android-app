@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -139,16 +138,14 @@ public class MainActivity extends AppCompatActivity {
         for(int i = 0; i < songList.size(); i++) {
             Song song = songList.get(i);
             if(song.getId().equals(optSong.getId())) {
-                songJson = song.toJSON("");
+                songJson = song.toJSON(null);
             }
         }
 
+        // todo : open modal to handle edit
+
         switch (item.getItemId()) {
             case R.id.action_edit:
-                Intent intent = new Intent(this, AddEditActivity.class);
-                intent.putExtra("SONG_JSON", songJson);
-                intent.putExtra("activity", "MAIN");
-                startActivity(intent);
                 return true;
             case R.id.action_remove:
                 return true;
@@ -171,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
 
             case R.id.action_add:
-                Intent intent = new Intent(this, AddEditActivity.class);
+                Intent intent = new Intent(this, AddActivity.class);
                 intent.putExtra("activity", "MAIN");
                 startActivity(intent);
                 return true;
